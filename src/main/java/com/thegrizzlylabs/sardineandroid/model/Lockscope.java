@@ -8,6 +8,10 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 /**
  * <p>Java class for anonymous complex type.</p>
  * 
@@ -28,15 +32,14 @@ package com.thegrizzlylabs.sardineandroid.model;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "exclusive",
-//    "shared"
-//})
-//@XmlRootElement(name = "lockscope")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Lockscope {
 
+    @Element(required = false)
     private Exclusive exclusive;
+
+    @Element(required = false)
     private Shared shared;
 
     /**

@@ -8,6 +8,9 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +34,8 @@ import java.util.List;
  *
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "supportedReport"
-//})
-//@XmlRootElement(name = "supported-report-set")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class SupportedReportSet {
 
     //@XmlElement(name = "supported-report", required = true)

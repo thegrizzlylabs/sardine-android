@@ -8,8 +8,9 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 
 /**
@@ -31,15 +32,12 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "href"
-//})
-//@XmlRootElement(name = "locktoken")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Locktoken {
 
-    //@XmlElement(required = true)
-    private List<String> href;
+    @Element
+    private String href;
 
     /**
      * Gets the value of the href property.
@@ -63,11 +61,8 @@ public class Locktoken {
      * 
      * 
      */
-    public List<String> getHref() {
-        if (href == null) {
-            href = new ArrayList<String>();
-        }
-        return this.href;
+    public String getHref() {
+        return href;
     }
 
 }

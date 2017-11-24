@@ -9,6 +9,8 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +35,14 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//		"privilege",
-//    "content"
-//})
-//@XmlRootElement(name = "grant")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Grant {
 
+    @ElementList(inline = true)
 	private List<Privilege> privilege;
-    @ElementList
-    //@XmlAnyElement(lax = true)
+
+    @ElementList(required = false)
     private List<Object> content;
 
     /**

@@ -9,6 +9,8 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 /**
  * <p>Java class for anonymous complex type.</p>
@@ -32,19 +34,13 @@ import org.simpleframework.xml.Element;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "prop",
-//    "status",
-//    "error",
-//    "responsedescription"
-//})
-//@Root(name = "propstat")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Propstat {
 
     @Element
     protected Prop prop;
-    //@XmlElement(required = true)
+
     @Element
     protected String status;
     protected Error error;

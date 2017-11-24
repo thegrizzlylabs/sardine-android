@@ -10,6 +10,8 @@ package com.thegrizzlylabs.sardineandroid.model;
 
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +19,9 @@ import java.util.List;
 
 /**
  * <p>Java class for anonymous complex type.</p>
- *
+ * <p>
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * <p>
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -43,32 +45,49 @@ import java.util.List;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- *
- *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//
-//})
-//@Root(name = "prop")
+
+@Root(strict = false)
+@Namespace(prefix = "D", reference = "DAV:")
 public class Prop {
 
-    @Element
-    private Resourcetype resourcetype;
-    @Element
+    @Element(required = false)
     private String creationdate;
-    @Element
-    private String getlastmodified;
-    @Element
-    private String getetag;
-    @Element(required = false)
-    private String getcontenttype;
-    @Element(required = false)
-    private String getcontentlength;
-    @Element(required = false)
-    private String getcontentlanguage;
+
     @Element(required = false)
     private String displayname;
+
+    @Element(required = false)
+    private String getcontentlanguage;
+
+    @Element(required = false)
+    private String getcontentlength;
+
+    @Element(required = false)
+    private String getcontenttype;
+
+    @Element(required = false)
+    private String getetag;
+
+    @Element(required = false)
+    private String getlastmodified;
+
+    @Element(required = false)
+    private Lockdiscovery lockdiscovery;
+
+    @Element(required = false)
+    private Resourcetype resourcetype;
+
+    @Element(required = false)
+    protected Supportedlock supportedlock;
+
+    @Element(name = "quota-available-bytes", required = false)
+    protected QuotaAvailableBytes quotaAvailableBytes;
+
+    @Element(name = "quota-used-bytes", required = false)
+    protected QuotaUsedBytes quotaUsedBytes;
+
+    protected List<org.w3c.dom.Element> any;
 
     public Resourcetype getResourcetype() {
         return resourcetype;
@@ -101,34 +120,23 @@ public class Prop {
     public String getDisplayname() {
         return displayname;
     }
-
-//    protected Creationdate creationdate;
-//    protected Displayname displayname;
-//    protected Getcontentlanguage getcontentlanguage;
-//    protected Getcontentlength getcontentlength;
-//    protected Getcontenttype getcontenttype;
-//    protected Getetag getetag;
-//    protected Getlastmodified getlastmodified;
-    protected Lockdiscovery lockdiscovery;
-//    protected Resourcetype resourcetype;
-//    protected Supportedlock supportedlock;
-//    //@XmlElement(name = "supported-report-set")
-//    protected SupportedReportSet supportedReportSet;
-//    //@XmlElement(name = "quota-available-bytes")
-    protected QuotaAvailableBytes quotaAvailableBytes;
-//    //@XmlElement(name = "quota-used-bytes")
-    protected QuotaUsedBytes quotaUsedBytes;
-//    //@XmlAnyElement
-    protected List<org.w3c.dom.Element> any;
-//
+    //
 //    //ACL elements
+    @Element(required = false)
     private Owner owner;
+
+    @Element(required = false)
     private Group group;
+
+    @Element(required = false)
     private Acl acl;
-//    //@XmlElement(name="principal-collection-set")
-//    private PrincipalCollectionSet principalCollectionSet;
-//    //@XmlElement(name="principal-URL")
-//    private PrincipalURL principalURL;
+
+
+    @Element(name="principal-collection-set", required = false)
+    private PrincipalCollectionSet principalCollectionSet;
+
+    @Element(name="principal-URL", required = false)
+    private PrincipalURL principalURL;
 
 
 //    /**
@@ -302,10 +310,8 @@ public class Prop {
     /**
      * Gets the value of the lockdiscovery property.
      *
-     * @return
-     *     possible object is
-     *     {@link Lockdiscovery }
-     *
+     * @return possible object is
+     * {@link Lockdiscovery }
      */
     public Lockdiscovery getLockdiscovery() {
         return lockdiscovery;
@@ -314,10 +320,8 @@ public class Prop {
     /**
      * Sets the value of the lockdiscovery property.
      *
-     * @param value
-     *     allowed object is
-     *     {@link Lockdiscovery }
-     *
+     * @param value allowed object is
+     *              {@link Lockdiscovery }
      */
     public void setLockdiscovery(Lockdiscovery value) {
         this.lockdiscovery = value;
@@ -395,13 +399,12 @@ public class Prop {
 //        this.supportedReportSet = value;
 //    }
 //
+
     /**
      * Gets the value of the quotaAvailableBytes property.
      *
-     * @return
-     *     possible object is
-     *     {@link QuotaAvailableBytes }
-     *
+     * @return possible object is
+     * {@link QuotaAvailableBytes }
      */
     public QuotaAvailableBytes getQuotaAvailableBytes() {
         return quotaAvailableBytes;
@@ -410,10 +413,8 @@ public class Prop {
     /**
      * Sets the value of the quotaAvailableBytes property.
      *
-     * @param value
-     *     allowed object is
-     *     {@link QuotaAvailableBytes }
-     *
+     * @param value allowed object is
+     *              {@link QuotaAvailableBytes }
      */
     public void setQuotaAvailableBytes(QuotaAvailableBytes value) {
         this.quotaAvailableBytes = value;
@@ -422,10 +423,8 @@ public class Prop {
     /**
      * Gets the value of the quotaUsedBytes property.
      *
-     * @return
-     *     possible object is
-     *     {@link QuotaUsedBytes }
-     *
+     * @return possible object is
+     * {@link QuotaUsedBytes }
      */
     public QuotaUsedBytes getQuotaUsedBytes() {
         return quotaUsedBytes;
@@ -434,10 +433,8 @@ public class Prop {
     /**
      * Sets the value of the quotaUsedBytes property.
      *
-     * @param value
-     *     allowed object is
-     *     {@link QuotaUsedBytes }
-     *
+     * @param value allowed object is
+     *              {@link QuotaUsedBytes }
      */
     public void setQuotaUsedBytes(QuotaUsedBytes value) {
         this.quotaUsedBytes = value;
@@ -445,25 +442,23 @@ public class Prop {
 
     /**
      * Gets the value of the any property.
-     *
+     * <p>
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the any property.
-     *
+     * <p>
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAny().add(newItem);
      * </pre>
-     *
-     *
+     * <p>
+     * <p>
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Element }
-     *
-     *
      */
     public List<org.w3c.dom.Element> getAny() {
         if (any == null) {
@@ -472,43 +467,43 @@ public class Prop {
         return this.any;
     }
 
-	public Owner getOwner() {
-		return owner;
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Acl getAcl() {
+        return acl;
+    }
+
+    public void setAcl(Acl acl) {
+        this.acl = acl;
+    }
+
+	public PrincipalCollectionSet getPrincipalCollectionSet() {
+		return principalCollectionSet;
 	}
 
-	public void setOwner(Owner owner) {
-		this.owner = owner;
+	public void setPrincipalCollectionSet(PrincipalCollectionSet principalCollectionSet) {
+		this.principalCollectionSet = principalCollectionSet;
 	}
 
-	public Group getGroup() {
-		return group;
+	public PrincipalURL getPrincipalURL() {
+		return principalURL;
 	}
 
-	public void setGroup(Group group) {
-		this.group = group;
+	public void setPrincipalURL(PrincipalURL principalURL) {
+		this.principalURL = principalURL;
 	}
-
-	public Acl getAcl() {
-		return acl;
-	}
-
-	public void setAcl(Acl acl) {
-		this.acl = acl;
-	}
-//
-//	public PrincipalCollectionSet getPrincipalCollectionSet() {
-//		return principalCollectionSet;
-//	}
-//
-//	public void setPrincipalCollectionSet(PrincipalCollectionSet principalCollectionSet) {
-//		this.principalCollectionSet = principalCollectionSet;
-//	}
-//
-//	public PrincipalURL getPrincipalURL() {
-//		return principalURL;
-//	}
-//
-//	public void setPrincipalURL(PrincipalURL principalURL) {
-//		this.principalURL = principalURL;
-//	}
 }

@@ -24,8 +24,8 @@ import com.thegrizzlylabs.sardineandroid.model.Lockinfo;
 import com.thegrizzlylabs.sardineandroid.model.Lockscope;
 import com.thegrizzlylabs.sardineandroid.model.Locktype;
 import com.thegrizzlylabs.sardineandroid.model.Multistatus;
-import com.thegrizzlylabs.sardineandroid.model.ObjectFactory;
 import com.thegrizzlylabs.sardineandroid.model.Owner;
+import com.thegrizzlylabs.sardineandroid.model.PrincipalCollectionSet;
 import com.thegrizzlylabs.sardineandroid.model.Prop;
 import com.thegrizzlylabs.sardineandroid.model.Propertyupdate;
 import com.thegrizzlylabs.sardineandroid.model.Propfind;
@@ -107,7 +107,6 @@ public class OkHttpSardine implements Sardine {
     public List<DavResource> list(String url, int depth, java.util.Set<QName> props) throws IOException {
         Propfind body = new Propfind();
         Prop prop = new Prop();
-        ObjectFactory objectFactory = new ObjectFactory();
 //        prop.setGetcontentlength(objectFactory.createGetcontentlength());
 //        prop.setGetlastmodified(objectFactory.createGetlastmodified());
 //        prop.setCreationdate(objectFactory.createCreationdate());
@@ -115,7 +114,7 @@ public class OkHttpSardine implements Sardine {
 //        prop.setGetcontenttype(objectFactory.createGetcontenttype());
 //        prop.setResourcetype(objectFactory.createResourcetype());
 //        prop.setGetetag(objectFactory.createGetetag());
-        //addCustomProperties(prop, props);
+//        addCustomProperties(prop, props);
         body.setProp(prop);
         return propfind(url, depth, body);
     }
@@ -198,8 +197,7 @@ public class OkHttpSardine implements Sardine {
     @Override
     public List<DavResource> patch(String url, Map<QName, String> setProps, List<QName> removeProps) throws IOException {
         List<Element> setPropsElements = new ArrayList<>();
-        for (Map.Entry<QName, String> entry : setProps.entrySet())
-        {
+        for (Map.Entry<QName, String> entry : setProps.entrySet()) {
             Element element = SardineUtil.createElement(entry.getKey());
             element.setTextContent(entry.getValue());
             setPropsElements.add(element);
@@ -272,37 +270,10 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(String url, InputStream dataStream) throws IOException {
-        this.put(url, dataStream, (String) null);
-    }
-
-    @Override
     public void put(String url, byte[] data, String contentType) throws IOException {
-        RequestBody requestBody = RequestBody.create(MediaType.parse(contentType), data);
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+        RequestBody requestBody = RequestBody.create(mediaType, data);
         put(url, requestBody);
-    }
-
-    @Override
-    public void put(String url, InputStream dataStream, String contentType) throws IOException {
-        this.put(url, dataStream, contentType, true);
-    }
-
-    @Override
-    public void put(String url, InputStream dataStream, String contentType, boolean expectContinue) throws IOException {
-        // A length of -1 means "go until end of stream"
-        put(url, dataStream, contentType, expectContinue, -1);
-    }
-
-    @Override
-    public void put(String url, InputStream dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException {
-        // See https://github.com/square/okhttp/issues/2424
-        throw new UnsupportedOperationException("InputStream not supported");
-    }
-
-    @Override
-    public void put(String url, InputStream dataStream, Map<String, String> headers) throws IOException {
-        // See https://github.com/square/okhttp/issues/2424
-        throw new UnsupportedOperationException("InputStream not supported");
     }
 
     @Override
@@ -313,7 +284,8 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException {
-        RequestBody requestBody = RequestBody.create(MediaType.parse(contentType), localFile);
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+        RequestBody requestBody = RequestBody.create(mediaType, localFile);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -535,7 +507,7 @@ public class OkHttpSardine implements Sardine {
         if (responses.isEmpty()) {
             return null;
         } else {
-            List<DavPrincipal> collections = new ArrayList<DavPrincipal>();
+            List<DavPrincipal> collections = new ArrayList<>();
             for (com.thegrizzlylabs.sardineandroid.model.Response r : responses) {
                 if (r.getPropstat() != null) {
                     for (Propstat propstat : r.getPropstat()) {
@@ -555,7 +527,37 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public List<String> getPrincipalCollectionSet(String url) throws IOException {
-        return null;
+        Propfind body = new Propfind();
+        Prop prop = new Prop();
+        prop.setPrincipalCollectionSet(new PrincipalCollectionSet());
+        body.setProp(prop);
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Depth", "0")
+                .method("PROPFIND", requestBody)
+                .build();
+
+        Multistatus multistatus = execute(request, new MultiStatusResponseHandler());
+        List<com.thegrizzlylabs.sardineandroid.model.Response> responses = multistatus.getResponse();
+        if (responses.isEmpty()) {
+            return null;
+        } else {
+            List<String> collections = new ArrayList<>();
+            for (com.thegrizzlylabs.sardineandroid.model.Response r : responses) {
+                if (r.getPropstat() != null) {
+                    for (Propstat propstat : r.getPropstat()) {
+                        if (propstat.getProp() != null
+                                && propstat.getProp().getPrincipalCollectionSet() != null
+                                && propstat.getProp().getPrincipalCollectionSet().getHref() != null) {
+                            collections.addAll(propstat.getProp().getPrincipalCollectionSet().getHref());
+                        }
+                    }
+                }
+            }
+            return collections;
+        }
     }
 
     @Override

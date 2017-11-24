@@ -8,6 +8,11 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.ElementListUnion;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,17 +37,14 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "removeOrSet"
-//})
-//@XmlRootElement(name = "propertyupdate")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Propertyupdate {
 
-//    @XmlElements({
-//        @XmlElement(name = "remove", type = Remove.class),
-//        @XmlElement(name = "set", type = Set.class)
-//    })
+    @ElementListUnion({
+            @ElementList(entry = "remove", type = Remove.class, inline = true),
+            @ElementList(entry = "set", type = Set.class, inline = true),
+    })
     private List<Object> removeOrSet;
 
     /**

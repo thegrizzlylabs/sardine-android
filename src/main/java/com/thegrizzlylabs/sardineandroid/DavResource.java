@@ -7,8 +7,6 @@
 
 package com.thegrizzlylabs.sardineandroid;
 
-import com.thegrizzlylabs.sardineandroid.model.Getcontentlength;
-import com.thegrizzlylabs.sardineandroid.model.Getcontenttype;
 import com.thegrizzlylabs.sardineandroid.model.Propstat;
 import com.thegrizzlylabs.sardineandroid.model.Resourcetype;
 import com.thegrizzlylabs.sardineandroid.model.Response;
@@ -41,13 +39,13 @@ public class DavResource
 	private static final Logger log = Logger.getLogger(DavResource.class.getName());
 
 	/**
-	 * The default content-type if {@link Getcontenttype} is not set in
+	 * The default content-type if Getcontenttype is not set in
 	 * the {@link com.thegrizzlylabs.sardineandroid.model.Multistatus} response.
 	 */
 	public static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 
 	/**
-	 * The default content-length if {@link Getcontentlength} is not set in
+	 * The default content-length if Getcontentlength is not set in
 	 * the {@link com.thegrizzlylabs.sardineandroid.model.Multistatus} response.
 	 */
 	public static final long DEFAULT_CONTENT_LENGTH = -1;

@@ -8,6 +8,8 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -34,15 +36,13 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "collection","principal",
-//    "any"
-//})
-//@XmlRootElement(name = "resourcetype")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Resourcetype {
 
+    @org.simpleframework.xml.Element(required = false)
     private Collection collection;
+
     private Principal principal;
     //@XmlAnyElement
     private List<Element> any;

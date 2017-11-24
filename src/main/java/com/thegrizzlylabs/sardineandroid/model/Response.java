@@ -10,6 +10,8 @@ package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,23 +45,14 @@ import java.util.List;
  *
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "href",
-//    "status",
-//    "propstat",
-//    "error",
-//    "responsedescription",
-//    "location"
-//})
-//@XmlRootElement(name = "response")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Response {
 
-    //@XmlElement(required = true)
     @Element
     protected String href;
     protected String status;
-    @ElementList(inline = true)
+    @ElementList(inline = true, required = false)
     protected List<Propstat> propstat;
     protected Error error;
     protected String responsedescription;

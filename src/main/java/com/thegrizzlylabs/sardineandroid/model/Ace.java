@@ -1,5 +1,9 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 /**
  * <p>Java class for anonymous complex type.</p>
  * 
@@ -14,18 +18,23 @@ package com.thegrizzlylabs.sardineandroid.model;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "",propOrder={"principal","grant","deny","inherited","protected1"})
-//@XmlElement(name = "ace")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Ace {
 
-	
+	@Element(required = false)
 	private Principal principal;
+
+	@Element(required = false)
 	private Grant grant;
+
+	@Element(required = false)
 	private Deny deny;
+
+	@Element(required = false)
 	private Inherited inherited;
 
-    //@XmlElement(name="protected")
+    @Element(name = "protected", required = false)
 	private Protected protected1;
     
 	public Principal getPrincipal() {

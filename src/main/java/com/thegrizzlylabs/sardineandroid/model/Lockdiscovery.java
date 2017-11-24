@@ -9,6 +9,8 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +35,11 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "activelock"
-//})
-//@XmlRootElement(name = "lockdiscovery")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Lockdiscovery {
 
-    @ElementList(inline = true)
+    @ElementList(inline = true, required = false)
     private List<Activelock> activelock;
 
     /**

@@ -8,6 +8,8 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 import org.w3c.dom.Element;
 
 
@@ -30,11 +32,8 @@ import org.w3c.dom.Element;
  *
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "any"
-//})
-//@XmlRootElement(name = "report")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Report {
 
     //@XmlAnyElement

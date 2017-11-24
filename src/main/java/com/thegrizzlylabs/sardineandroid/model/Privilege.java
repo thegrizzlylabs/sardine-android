@@ -1,18 +1,17 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "content"
-//})
-//@XmlRootElement(name = "privilege")
+@Root(strict = false)
+@Namespace(prefix = "D", reference = "DAV:")
 public class Privilege {
-    @ElementList
-    //@XmlAnyElement(lax = true)
+
+    @ElementList(required = false)
 	private List<Object> content;
 
 	public List<Object> getContent() {

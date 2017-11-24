@@ -9,6 +9,9 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 /**
  * <p>Java class for anonymous complex type.</p>
  *
@@ -25,9 +28,8 @@ package com.thegrizzlylabs.sardineandroid.model;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "")
-//@XmlRootElement(name = "shared")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Shared {
 
 

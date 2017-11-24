@@ -8,7 +8,10 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +36,16 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "href","unauthenticated","content"
-//})
-//@XmlRootElement(name = "owner")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Owner {
 
+	@Element(required = false)
 	private String href;
+
 	private Unauthenticated unauthenticated;
-    @ElementList
-    //@XmlAnyElement(lax = true)
+
+    @ElementList(required = false)
     private List<Object> content;
 
     /**

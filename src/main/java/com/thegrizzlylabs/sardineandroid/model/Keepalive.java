@@ -9,6 +9,8 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,11 +36,9 @@ import java.util.List;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "content"
-//})
-//@XmlRootElement(name = "keepalive")
+
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Keepalive {
 
     //@XmlElementRef(name = "href", namespace = "DAV:", type = JAXBElement.class)

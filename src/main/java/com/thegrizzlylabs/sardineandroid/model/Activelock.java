@@ -8,6 +8,10 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 /**
  * <p>Java class for anonymous complex type.</p>
  * 
@@ -32,26 +36,26 @@ package com.thegrizzlylabs.sardineandroid.model;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "lockscope",
-//    "locktype",
-//    "depth",
-//    "owner",
-//    "timeout",
-//    "locktoken"
-//})
-//@XmlRootElement(name = "activelock")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Activelock {
 
-    //@XmlElement(required = true)
+    @Element
     private Lockscope lockscope;
-    //@XmlElement(required = true)
+
+    @Element
     private Locktype locktype;
-    //@XmlElement(required = true)
+
+    @Element
     private String depth;
+
+    @Element(required = false)
     private Owner owner;
+
+    @Element(required = false)
     private String timeout;
+
+    @Element(required = false)
     private Locktoken locktoken;
 
     /**

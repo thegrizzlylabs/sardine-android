@@ -1,9 +1,11 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "")
-//@XmlRootElement(name = "protected")
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Protected {
 
 	

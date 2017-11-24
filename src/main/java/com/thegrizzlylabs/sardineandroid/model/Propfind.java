@@ -8,6 +8,8 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
 /**
@@ -31,17 +33,17 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "allprop",
-//    "propname",
-//    "prop"
-//})
-@Root(name = "propfind")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Propfind {
 
+    @Element(required = false)
     private Allprop allprop;
+
+    @Element(required = false)
     private Propname propname;
+
+    @Element(required = false)
     private Prop prop;
 
     /**

@@ -8,6 +8,9 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.Root;
+
 import java.math.BigInteger;
 
 
@@ -30,11 +33,8 @@ import java.math.BigInteger;
  *
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlType(name = "", propOrder = {
-//    "nresults"
-//})
-//@XmlRootElement(name = "limit")
+@Root
+@Namespace(prefix = "D", reference = "DAV:")
 public class Limit {
 
     //@XmlElement(required = true)
