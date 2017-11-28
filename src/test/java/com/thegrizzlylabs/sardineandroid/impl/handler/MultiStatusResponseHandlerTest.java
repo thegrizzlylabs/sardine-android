@@ -29,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,7 +46,7 @@ public class MultiStatusResponseHandlerTest {
             handler.getMultistatus(new ByteArrayInputStream("noxml".getBytes()));
             fail("Expected XML parsing failure");
         } catch (IOException e) {
-            assertEquals(XMLStreamException.class, e.getCause().getClass());
+            assertEquals("XMLStreamException", e.getCause().getClass().getSimpleName());
         }
     }
 
@@ -192,7 +191,7 @@ public class MultiStatusResponseHandlerTest {
             handler.getMultistatus(new ByteArrayInputStream(response.getBytes()));
             fail("Expected XML parsing failure");
         } catch (IOException e) {
-            assertEquals(XMLStreamException.class, e.getCause().getClass());
+            assertEquals("XMLStreamException", e.getCause().getClass().getSimpleName());
         }
     }
 
