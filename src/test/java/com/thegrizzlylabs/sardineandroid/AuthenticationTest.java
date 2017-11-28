@@ -46,6 +46,7 @@ public class AuthenticationTest {
         }
     }
 
+    @Ignore
     @Test
     public void testDigestAuth() throws Exception {
         Sardine sardine = new OkHttpSardine();
@@ -60,6 +61,7 @@ public class AuthenticationTest {
         }
     }
 
+    @Ignore
     @Test
     public void testDigestAuthWithBasicPreemptiveAuthenticationEnabled() throws Exception {
         Sardine sardine = new OkHttpSardine();

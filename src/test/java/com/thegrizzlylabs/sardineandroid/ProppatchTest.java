@@ -43,12 +43,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 @Category(IntegrationTest.class)
 public class ProppatchTest {
     /**
      * Try to patch property in WebDAV namespace.
      */
-    @Ignore
     @Test
     public void testAddPropertyDefaultNamespace() throws Exception {
         Sardine sardine = new OkHttpSardine();
