@@ -223,12 +223,8 @@ public class DavResource {
                 if ((resourcetype != null) && (resourcetype.getCollection() != null)) {
                     // Need to correct the contentType to identify as a directory.
                     return HTTPD_UNIX_DIRECTORY_CONTENT_TYPE;
-                } else {
+                } else if (propstat.getProp().getGetcontenttype() != null) {
                     return propstat.getProp().getGetcontenttype();
-//					if ((gtt != null) && (gtt.getContent().size() == 1))
-//					{
-//						return gtt.getContent().get(0);
-//					}
                 }
             }
         }
