@@ -50,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
@@ -67,20 +66,20 @@ import okhttp3.Response;
 
 public class OkHttpSardine implements Sardine {
 
-    private static final Logger log = Logger.getLogger(DavResource.class.getName());
-
-    private OkHttpClient.Builder clientBuilder;
     private OkHttpClient client;
 
     public OkHttpSardine() {
-        this.clientBuilder = new OkHttpClient.Builder();
-        this.client = clientBuilder.build();
+        this.client = new OkHttpClient.Builder().build();
+    }
+
+    public OkHttpSardine(OkHttpClient client) {
+        this.client = client;
     }
 
     @Override
     public void setCredentials(String username, String password) {
-        this.clientBuilder = new OkHttpClient.Builder().authenticator(new BasicAuthenticator(username, password));
-        this.client = clientBuilder.build();
+        OkHttpClient.Builder builder = client.newBuilder().authenticator(new BasicAuthenticator(username, password));
+        this.client = builder.build();
     }
 
     @Override
