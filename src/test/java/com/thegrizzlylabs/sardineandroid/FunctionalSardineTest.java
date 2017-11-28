@@ -493,9 +493,17 @@ public class FunctionalSardineTest {
     @Test
     public void testExists() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        assertTrue(sardine.exists("https://github.com/thegrizzlylabs/sardine-android"));
-        assertTrue(sardine.exists("https://github.com/thegrizzlylabs/sardine-android/blob/master/README.md"));
-        assertFalse(sardine.exists("https://github.com/thegrizzlylabs/sardine-android/blob/master/READMEfalse.md"));
+        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir"));
+        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt"));
+        assertFalse(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir/sadness.txt"));
+    }
+
+    @Test
+    public void testExistsWithAuthentication() throws IOException {
+        Sardine sardine = new OkHttpSardine();
+        sardine.setCredentials("jenkins", "jenkins");
+        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/basic/"));
+        assertFalse(sardine.exists("http://test.cyberduck.ch/dav/basic/bla"));
     }
 
     @Test

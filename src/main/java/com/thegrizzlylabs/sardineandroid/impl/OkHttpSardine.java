@@ -359,7 +359,8 @@ public class OkHttpSardine implements Sardine {
     public boolean exists(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
-                .head()
+                .header("Depth", "0")
+                .method("PROPFIND", null)
                 .build();
 
         return execute(request, new ExistsResponseHandler());
