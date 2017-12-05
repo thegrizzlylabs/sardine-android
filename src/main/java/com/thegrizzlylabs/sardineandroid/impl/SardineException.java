@@ -17,6 +17,7 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Specialized type of exception for Sardine so
@@ -58,6 +59,6 @@ public class SardineException extends IOException
 
 	@Override
 	public String getMessage() {
-		return String.format("%s (%d %s)", super.getMessage(), this.getStatusCode(), this.getResponsePhrase());
+		return String.format(Locale.US, "%s (%d %s)", super.getMessage(), this.getStatusCode(), this.getResponsePhrase());
 	}
 }
