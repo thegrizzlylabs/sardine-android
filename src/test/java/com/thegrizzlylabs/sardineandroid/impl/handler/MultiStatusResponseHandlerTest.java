@@ -623,7 +623,6 @@ public class MultiStatusResponseHandlerTest {
         assertEquals(12, status.getResponse().size());
     }
 
-    @Ignore
     @Test
     public void testAclResponse() throws Exception {
         String[] responses = new String[]{

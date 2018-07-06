@@ -27,7 +27,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "all")
 @Namespace(prefix = "D", reference = "DAV:")
 public class All implements SimplePrivilege {
 

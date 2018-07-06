@@ -28,9 +28,9 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "unbind")
 @Namespace(prefix = "D", reference = "DAV:")
-public class UnBind implements SimplePrivilege {
+public class Unbind implements SimplePrivilege {
 
 
 }

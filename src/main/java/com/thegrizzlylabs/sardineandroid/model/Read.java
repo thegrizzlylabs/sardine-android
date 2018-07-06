@@ -28,9 +28,8 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "read")
 @Namespace(prefix = "D", reference = "DAV:")
 public class Read implements SimplePrivilege {
-
 
 }

@@ -43,6 +43,7 @@ public class Owner {
 	@Element(required = false)
 	private String href;
 
+	@Element(required = false)
 	private Unauthenticated unauthenticated;
 
     @ElementList(required = false)
@@ -73,7 +74,7 @@ public class Owner {
      */
     public List<Object> getContent() {
         if (content == null) {
-            content = new ArrayList<Object>();
+            content = new ArrayList<>();
         }
         return this.content;
     }

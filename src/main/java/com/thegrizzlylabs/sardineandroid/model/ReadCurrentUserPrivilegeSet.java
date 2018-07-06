@@ -27,7 +27,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "read-current-user-privilege-set")
 @Namespace(prefix = "D", reference = "DAV:")
 public class ReadCurrentUserPrivilegeSet implements SimplePrivilege {
 

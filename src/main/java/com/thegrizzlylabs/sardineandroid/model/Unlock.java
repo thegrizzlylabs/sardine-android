@@ -28,7 +28,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "unlock")
 @Namespace(prefix = "D", reference = "DAV:")
 public class Unlock implements SimplePrivilege {
 

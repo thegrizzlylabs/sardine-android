@@ -43,7 +43,11 @@ public class Propstat {
 
     @Element
     protected String status;
+
+    @Element(required = false)
     protected Error error;
+
+    @Element(required = false)
     protected String responsedescription;
 
     /**

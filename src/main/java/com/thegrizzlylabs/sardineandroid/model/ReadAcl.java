@@ -28,7 +28,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "read-acl")
 @Namespace(prefix = "D", reference = "DAV:")
 public class ReadAcl implements SimplePrivilege {
 

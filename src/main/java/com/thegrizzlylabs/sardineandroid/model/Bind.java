@@ -27,7 +27,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "bind")
 @Namespace(prefix = "D", reference = "DAV:")
 public class Bind  implements SimplePrivilege {
 

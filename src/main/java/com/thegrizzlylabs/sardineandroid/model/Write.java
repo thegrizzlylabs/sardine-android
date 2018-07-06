@@ -28,7 +28,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(name = "write")
 @Namespace(prefix = "D", reference = "DAV:")
 public class Write implements SimplePrivilege {
 

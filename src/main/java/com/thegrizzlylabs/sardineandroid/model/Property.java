@@ -8,10 +8,14 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import com.thegrizzlylabs.sardineandroid.ElementConverter;
+
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.convert.Converter;
+import org.simpleframework.xml.stream.InputNode;
+import org.simpleframework.xml.stream.OutputNode;
 import org.w3c.dom.Element;
-
 
 
 /**
@@ -48,8 +52,6 @@ import org.w3c.dom.Element;
 @Namespace(prefix = "D", reference = "DAV:")
 public class Property {
 
-
-	//@XmlAnyElement
 	private Element property;
 
 	public Element getProperty() {
@@ -58,6 +60,23 @@ public class Property {
 
 	public void setProperty(Element property) {
 		this.property = property;
+	}
+
+	public static class PropertyConverter implements Converter<Property> {
+		@Override
+		public Property read(InputNode node) throws Exception {
+			Property property = new Property();
+			InputNode childNode = node.getNext();
+			if (childNode != null) {
+				property.setProperty(ElementConverter.read(childNode));
+			}
+			return property;
+		}
+
+		@Override
+		public void write(OutputNode node, Property value) throws Exception {
+			ElementConverter.write(node, value.property);
+		}
 	}
 
 }
