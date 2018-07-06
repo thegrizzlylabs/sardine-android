@@ -395,22 +395,13 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public void unlock(String url, String token) throws IOException {
-        Lockinfo body = new Lockinfo();
-        Lockscope scopeType = new Lockscope();
-        scopeType.setExclusive(new Exclusive());
-        body.setLockscope(scopeType);
-        Locktype lockType = new Locktype();
-        lockType.setWrite(new Write());
-        body.setLocktype(lockType);
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
         Request request = new Request.Builder()
                 .url(url)
-                .method("UNLOCK", requestBody)
+                .method("UNLOCK", null)
                 .header("Lock-Token", "<" + token + ">")
                 .build();
 
-        this.execute(request, new VoidResponseHandler());
+        execute(request, new VoidResponseHandler());
     }
 
     @Override

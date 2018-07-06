@@ -8,6 +8,7 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
@@ -36,10 +37,13 @@ import org.simpleframework.xml.Root;
 @Namespace(prefix = "D", reference = "DAV:")
 public class Lockinfo {
 
-    //@XmlElement(required = true)
+    @Element
     private Lockscope lockscope;
-    //@XmlElement(required = true)
+
+    @Element
     private Locktype locktype;
+
+    @Element(required = false)
     private Owner owner;
 
     /**

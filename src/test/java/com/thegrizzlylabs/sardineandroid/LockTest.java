@@ -19,17 +19,14 @@ package com.thegrizzlylabs.sardineandroid;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Ignore
 @Category(IntegrationTest.class)
 public class LockTest {
     @Test
@@ -43,7 +40,9 @@ public class LockTest {
                 sardine.delete(url);
                 fail("Expected delete to fail on locked resource");
             } catch (SardineException e) {
-                assertEquals(423, e.getStatusCode());
+                if (e.getStatusCode() != 423) {
+                    throw e;
+                }
             }
             sardine.unlock(url, token);
         } finally {
@@ -54,12 +53,14 @@ public class LockTest {
     @Test
     public void testLockFailureNotImplemented() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        String url = "http://sardine.googlecode.com/svn/trunk/README.html";
+        String url = "https://www.w3.org/Amaya/User/doc/WebDAV.html";
         try {
             sardine.lock(url);
             fail("Expected lock to fail");
         } catch (SardineException e) {
-            assertEquals(405, e.getStatusCode());
+            if (e.getStatusCode() != 405) {
+                throw e;
+            }
         }
     }
 
@@ -72,7 +73,6 @@ public class LockTest {
         final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", file);
         sardine.put(url, new byte[0]);
         try {
-
             String lockToken = sardine.lock(url);
             String result = sardine.refreshLock(url, lockToken, url);
 
