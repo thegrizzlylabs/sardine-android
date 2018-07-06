@@ -9,12 +9,22 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 
+import com.thegrizzlylabs.sardineandroid.ElementConverter;
+import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.Converter;
+import org.simpleframework.xml.stream.InputNode;
+import org.simpleframework.xml.stream.OutputNode;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -52,31 +62,31 @@ import java.util.List;
 public class Prop {
 
     @Element(required = false)
-    private String creationdate;
+    protected String creationdate;
 
     @Element(required = false)
-    private String displayname;
+    protected String displayname;
 
     @Element(required = false)
-    private String getcontentlanguage;
+    protected String getcontentlanguage;
 
     @Element(required = false)
-    private String getcontentlength;
+    protected String getcontentlength;
 
     @Element(required = false)
-    private String getcontenttype;
+    protected String getcontenttype;
 
     @Element(required = false)
-    private String getetag;
+    protected String getetag;
 
     @Element(required = false)
-    private String getlastmodified;
+    protected String getlastmodified;
 
     @Element(required = false)
-    private Lockdiscovery lockdiscovery;
+    protected Lockdiscovery lockdiscovery;
 
     @Element(required = false)
-    private Resourcetype resourcetype;
+    protected Resourcetype resourcetype;
 
     @Element(required = false)
     protected Supportedlock supportedlock;
@@ -121,22 +131,50 @@ public class Prop {
         return displayname;
     }
 
+    public void setCreationdate(String creationdate) {
+        this.creationdate = creationdate;
+    }
+
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
+    }
+
+    public void setGetcontentlanguage(String getcontentlanguage) {
+        this.getcontentlanguage = getcontentlanguage;
+    }
+
+    public void setGetcontentlength(String getcontentlength) {
+        this.getcontentlength = getcontentlength;
+    }
+
+    public void setGetcontenttype(String getcontenttype) {
+        this.getcontenttype = getcontenttype;
+    }
+
+    public void setGetetag(String getetag) {
+        this.getetag = getetag;
+    }
+
+    public void setGetlastmodified(String getlastmodified) {
+        this.getlastmodified = getlastmodified;
+    }
+
     //ACL elements
     @Element(required = false)
-    private Owner owner;
+    protected Owner owner;
 
     @Element(required = false)
-    private Group group;
+    protected Group group;
 
     @Element(required = false)
-    private Acl acl;
+    protected Acl acl;
 
 
     @Element(name="principal-collection-set", required = false)
-    private PrincipalCollectionSet principalCollectionSet;
+    protected PrincipalCollectionSet principalCollectionSet;
 
     @Element(name="principal-URL", required = false)
-    private PrincipalURL principalURL;
+    protected PrincipalURL principalURL;
 
     /**
      * Gets the value of the lockdiscovery property.
@@ -264,4 +302,65 @@ public class Prop {
 	public void setPrincipalURL(PrincipalURL principalURL) {
 		this.principalURL = principalURL;
 	}
+
+    public static class PropConverter implements Converter<Prop> {
+
+        private Serializer serializer;
+
+        public PropConverter(Serializer serializer) {
+            this.serializer = serializer;
+        }
+
+        private Map<String, Field> getPropElements() {
+            Map<String, Field> elementsFields = new HashMap<>();
+            for (Field field : Prop.class.getDeclaredFields()) {
+                Element fieldAnnotation = field.getAnnotation(Element.class);
+                if (fieldAnnotation != null) {
+                    String name = fieldAnnotation.name().equals("") ? field.getName() : fieldAnnotation.name();
+                    elementsFields.put(name, field);
+                }
+            }
+            return elementsFields;
+        }
+
+        @Override
+        public Prop read(InputNode node) throws Exception {
+            Map<String, Field> propElements = getPropElements();
+            Prop prop = new Prop();
+            List<org.w3c.dom.Element> anyElements = prop.getAny();
+            InputNode childNode;
+            while((childNode = node.getNext()) != null) {
+                if (propElements.containsKey(childNode.getName())) {
+                    Field field = propElements.get(childNode.getName());
+                    field.set(prop, serializer.read(field.getType(), childNode));
+                } else {
+                    org.w3c.dom.Element element = ElementConverter.read(childNode);
+                    anyElements.add(element);
+                }
+            }
+            return prop;
+        }
+
+        @Override
+        public void write(OutputNode node, Prop prop) throws Exception {
+            for(org.w3c.dom.Element domElement : prop.getAny()) {
+                ElementConverter.write(node, domElement);
+            }
+            Map<String, Field> propElements = getPropElements();
+            for (String fieldName : propElements.keySet()) {
+                Field field = propElements.get(fieldName);
+                Object value = field.get(prop);
+                if (value == null) {
+                    continue;
+                }
+                if (value instanceof String) {
+                    OutputNode childNode = node.getChild(fieldName);
+                    childNode.setReference(SardineUtil.DEFAULT_NAMESPACE_URI);
+                    childNode.setValue((String)value);
+                } else {
+                    serializer.write(field.getType(), node);
+                }
+            }
+        }
+    }
 }

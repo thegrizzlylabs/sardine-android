@@ -113,7 +113,7 @@ public class OkHttpSardine implements Sardine {
 //        prop.setGetcontenttype(objectFactory.createGetcontenttype());
 //        prop.setResourcetype(objectFactory.createResourcetype());
 //        prop.setGetetag(objectFactory.createGetetag());
-//        addCustomProperties(prop, props);
+        addCustomProperties(prop, props);
         body.setProp(prop);
         return propfind(url, depth, body);
     }
@@ -133,18 +133,18 @@ public class OkHttpSardine implements Sardine {
     public List<DavResource> propfind(String url, int depth, java.util.Set<QName> props) throws IOException {
         Propfind body = new Propfind();
         Prop prop = new Prop();
-        //addCustomProperties(prop, props);
+        addCustomProperties(prop, props);
         body.setProp(prop);
         return propfind(url, depth, body);
     }
 
-//    private void addCustomProperties(Prop prop, java.util.Set<QName> props) {
-//        List<Element> any = prop.getAny();
-//        for (QName entry : props) {
-//            Element element = SardineUtil.createElement(entry);
-//            any.add(element);
-//        }
-//    }
+    private void addCustomProperties(Prop prop, java.util.Set<QName> props) {
+        List<Element> any = prop.getAny();
+        for (QName entry : props) {
+            Element element = SardineUtil.createElement(entry);
+            any.add(element);
+        }
+    }
 
     protected List<DavResource> propfind(String url, int depth, Propfind body) throws IOException {
         RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));

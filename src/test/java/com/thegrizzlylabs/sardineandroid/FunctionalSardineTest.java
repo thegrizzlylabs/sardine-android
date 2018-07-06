@@ -41,6 +41,7 @@ import javax.xml.namespace.QName;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -194,8 +195,9 @@ public class FunctionalSardineTest {
         final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
         final List<DavResource> resources = sardine.list(url);
         assertEquals(1, resources.size());
-        assertNotNull(resources.iterator().next().getModified());
-        assertNotNull(resources.iterator().next().getCreation());
+        DavResource resource = resources.get(0);
+        assertNotNull(resource.getModified());
+        assertNotNull(resource.getCreation());
     }
 
     @Test
@@ -204,7 +206,9 @@ public class FunctionalSardineTest {
         final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
         final List<DavResource> resources = sardine.list(url);
         assertEquals(1, resources.size());
-        assertNotNull(resources.iterator().next().getContentLength());
+        Long contentLength = resources.get(0).getContentLength();
+        assertNotNull(contentLength);
+        assertNotEquals(DavResource.DEFAULT_CONTENT_LENGTH, contentLength.longValue());
     }
 
     @Ignore

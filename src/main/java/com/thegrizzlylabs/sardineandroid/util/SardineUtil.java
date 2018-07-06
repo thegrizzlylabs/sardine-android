@@ -1,7 +1,14 @@
 package com.thegrizzlylabs.sardineandroid.util;
 
+import com.thegrizzlylabs.sardineandroid.model.Prop;
+import com.thegrizzlylabs.sardineandroid.model.Property;
+
 import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.Converter;
+import org.simpleframework.xml.convert.Registry;
+import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.stream.Format;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,31 +65,14 @@ public final class SardineUtil {
     /**
      * Default namespace prefix
      */
-    public static final String DEFAULT_NAMESPACE_PREFIX = "d";
+    public static final String DEFAULT_NAMESPACE_PREFIX = "D";
 
     /**
      * Default namespace URI
      */
     public static final String DEFAULT_NAMESPACE_URI = "DAV:";
 
-    /**
-     * Reusable context for marshalling and unmarshalling
-     */
-//	private static final JAXBContext JAXB_CONTEXT;
-//
     private static final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//
-//	static
-//	{
-//		try
-//		{
-//			JAXB_CONTEXT = JAXBContext.newInstance(ObjectFactory.class);
-//		}
-//		catch (JAXBException e)
-//		{
-//			throw new RuntimeException(e);
-//		}
-//	}
 
     /**
      * Date formats using for Date parsing.
@@ -90,7 +80,7 @@ public final class SardineUtil {
     private static final List<ThreadLocal<SimpleDateFormat>> DATETIME_FORMATS;
 
     static {
-        List<ThreadLocal<SimpleDateFormat>> l = new ArrayList<ThreadLocal<SimpleDateFormat>>(SUPPORTED_DATE_FORMATS.length);
+        List<ThreadLocal<SimpleDateFormat>> l = new ArrayList<>(SUPPORTED_DATE_FORMATS.length);
         for (int i = 0; i < SUPPORTED_DATE_FORMATS.length; i++) {
             l.add(new ThreadLocal<SimpleDateFormat>());
         }
@@ -126,107 +116,45 @@ public final class SardineUtil {
         return date;
     }
 
+    private static Serializer getSerializer() throws Exception {
+        Format format = new Format("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        Registry registry = new Registry();
+        Strategy strategy = new RegistryStrategy(registry);
+        Serializer serializer = new Persister(strategy, format);
+        Converter<Prop> converter = new Prop.PropConverter(serializer);
+
+        registry.bind(Prop.class, converter);
+        registry.bind(Property.class, Property.PropertyConverter.class);
+
+        return serializer;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(Class<? extends T> type, InputStream in) throws IOException {
-        Serializer serializer = new Persister();
         try {
-//			XMLReader reader = XMLReaderFactory.createXMLReader();
-//			try
-//			{
-//				reader.setFeature(
-//						"http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-//			}
-//			catch (SAXException e)
-//			{
-//				; //Not all parsers will support this attribute
-//			}
-//			try
-//			{
-//				reader.setFeature(
-//						"http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
-//			}
-//			catch (SAXException e)
-//			{
-//				; //Not all parsers will support this attribute
-//			}
-//			try
-//			{
-//				reader.setFeature(
-//						"http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
-//			}
-//			catch (SAXException e)
-//			{
-//				; //Not all parsers will support this attribute
-//			}
-//			try
-//			{
-//				reader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-//			}
-//			catch (SAXException e)
-//			{
-//				; //Not all parsers will support this attribute
-//			}
-            return serializer.read(type, in);
+            return getSerializer().read(type, in);
         } catch (SAXException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (Exception e) {
             // Server does not return any valid WebDAV XML that matches our JAXB context
-            IOException failure = new IOException("Not a valid DAV response");
-            // Backward compatibility
-            failure.initCause(e);
-            throw failure;
+            throw new IOException("Not a valid DAV response", e);
         }
-//		finally
-//		{
-//			if (unmarshaller instanceof Closeable)
-//			{
-//				try
-//				{
-//					((Closeable) unmarshaller).close();
-//					serializer.
-//				}
-//				catch (IOException e)
-//				{
-//					// there's not much we can do here
-//				}
-//			}
-//		}
     }
 
     /**
-     * Creates an {@link Unmarshaller} from the {@link SardineUtil#JAXB_CONTEXT}.
-     * Note: the unmarshaller is not thread safe, so it must be created for every request.
-     *
-     * @return A new unmarshaller
-     * @throws IOException When there is a JAXB error
+     * @param jaxbElement An object from the model
+     * @return The XML string for the WebDAV request
+     * @throws RuntimeException When there is a JAXB error
      */
-//	private static Unmarshaller createUnmarshaller() throws IOException
-//	{
-//		try
-//		{
-//			return JAXB_CONTEXT.createUnmarshaller();
-//		}
-//		catch (JAXBException e)
-//		{
-//			throw new IOException(e.getMessage(), e);
-//		}
-//	}
-
-    /**
-     * @return A new marshaller
-     * @throws IOException When there is a JAXB error
-     */
-//	private static Marshaller createMarshaller() throws IOException
-//	{
-//		try
-//		{
-//			return JAXB_CONTEXT.createMarshaller();
-//		}
-//		catch (JAXBException e)
-//		{
-//			throw new IOException(e.getMessage(), e);
-//		}
-//	}
+    public static String toXml(Object jaxbElement) {
+        StringWriter writer = new StringWriter();
+        try {
+            getSerializer().write(jaxbElement, writer);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        return writer.toString();
+    }
 
     /**
      * @return New XML document from the default document builder factory.
@@ -241,29 +169,12 @@ public final class SardineUtil {
         return builder.newDocument();
     }
 
-    /**
-     * @param jaxbElement An object from the model
-     * @return The XML string for the WebDAV request
-     * @throws RuntimeException When there is a JAXB error
-     */
-    public static String toXml(Object jaxbElement) throws IOException {
-        StringWriter writer = new StringWriter();
-        try {
-            Format format = new Format("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            Serializer serializer = new Persister(format);
-            serializer.write(jaxbElement, writer);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        return writer.toString();
-    }
-
     /** */
     public static Map<QName, String> toQName(Map<String, String> setProps) {
         if (setProps == null) {
             return Collections.emptyMap();
         }
-        Map<QName, String> result = new HashMap<QName, String>(setProps.size());
+        Map<QName, String> result = new HashMap<>(setProps.size());
         for (Map.Entry<String, String> entry : setProps.entrySet()) {
             result.put(createQNameWithCustomNamespace(entry.getKey()), entry.getValue());
         }
@@ -275,7 +186,7 @@ public final class SardineUtil {
         if (removeProps == null) {
             return Collections.emptyList();
         }
-        List<QName> result = new ArrayList<QName>(removeProps.size());
+        List<QName> result = new ArrayList<>(removeProps.size());
         for (String entry : removeProps) {
             result.add(createQNameWithCustomNamespace(entry));
         }

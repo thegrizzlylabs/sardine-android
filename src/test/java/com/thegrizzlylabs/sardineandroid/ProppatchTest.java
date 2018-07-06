@@ -19,7 +19,6 @@ package com.thegrizzlylabs.sardineandroid;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.w3c.dom.Element;
@@ -43,7 +42,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 @Category(IntegrationTest.class)
 public class ProppatchTest {
     /**
@@ -81,7 +79,7 @@ public class ProppatchTest {
         String url = "http://test.cyberduck.ch/dav/anon/sardine/" + UUID.randomUUID().toString();
         sardine.put(url, new byte[]{});
         try {
-            HashMap<QName, String> patch = new HashMap<QName, String>();
+            HashMap<QName, String> patch = new HashMap<>();
             patch.put(SardineUtil.createQNameWithCustomNamespace("fish"), "sardine");
             {
                 List<DavResource> resources = sardine.patch(url, patch);
