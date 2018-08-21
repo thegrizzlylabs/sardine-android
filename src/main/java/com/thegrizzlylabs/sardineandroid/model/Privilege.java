@@ -20,7 +20,7 @@ public class Privilege {
 			@ElementList(entry="unlock", inline=true, type=Unlock.class),
 			@ElementList(entry="read-acl", inline=true, type=ReadAcl.class),
 			@ElementList(entry="bind", inline=true, type=Bind.class),
-			@ElementList(entry="unbind", inline=true, type=Unbind.class),
+			@ElementList(entry="unbind", inline=true, type=UnBind.class),
 			@ElementList(entry="read-current-user-privilege-set", inline=true, type=ReadCurrentUserPrivilegeSet.class),
 			@ElementList(entry="all", inline=true, type=All.class),
 	})

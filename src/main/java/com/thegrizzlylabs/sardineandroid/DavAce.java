@@ -14,7 +14,7 @@ import com.thegrizzlylabs.sardineandroid.model.ReadAcl;
 import com.thegrizzlylabs.sardineandroid.model.ReadCurrentUserPrivilegeSet;
 import com.thegrizzlylabs.sardineandroid.model.Self;
 import com.thegrizzlylabs.sardineandroid.model.SimplePrivilege;
-import com.thegrizzlylabs.sardineandroid.model.Unbind;
+import com.thegrizzlylabs.sardineandroid.model.UnBind;
 import com.thegrizzlylabs.sardineandroid.model.Unauthenticated;
 import com.thegrizzlylabs.sardineandroid.model.Unlock;
 import com.thegrizzlylabs.sardineandroid.model.Write;
@@ -183,7 +183,7 @@ public class DavAce {
             } else if ("read-current-user-privilege-set".equals(right)) {
                 p.getContent().add(new ReadCurrentUserPrivilegeSet());
             } else if ("unbind".equals(right)) {
-                p.getContent().add(new Unbind());
+                p.getContent().add(new UnBind());
             } else if ("unlock".equals(right)) {
                 p.getContent().add(new Unlock());
             } else if ("write".equals(right)) {
