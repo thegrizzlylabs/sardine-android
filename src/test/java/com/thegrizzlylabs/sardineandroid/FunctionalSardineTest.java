@@ -245,6 +245,7 @@ public class FunctionalSardineTest {
         }
     }
 
+    @Ignore
     @Test
     public void testDavOwner() throws IOException {
         final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s/", UUID.randomUUID().toString());
@@ -259,6 +260,7 @@ public class FunctionalSardineTest {
         }
     }
 
+    @Ignore
     @Test
     public void testDavPrincipals() throws IOException, URISyntaxException {
         final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s/", UUID.randomUUID().toString());
