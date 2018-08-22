@@ -358,7 +358,7 @@ public class Prop {
                     childNode.setReference(SardineUtil.DEFAULT_NAMESPACE_URI);
                     childNode.setValue((String)value);
                 } else {
-                    serializer.write(field.getType(), node);
+                    serializer.write(value, node);
                 }
             }
         }
