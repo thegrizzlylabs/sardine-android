@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,16 +25,14 @@ public interface Sardine
 	 *
 	 * @param username Use in authentication header credentials
 	 * @param password Use in authentication header credentials
+	 * @param isPreemptive true if preemptive authentication should be used
 	 */
-	void setCredentials(String username, String password);
+	void setCredentials(String username, String password, boolean isPreemptive);
 
 	/**
-	 * @param username	Use in authentication header credentials
-	 * @param password	Use in authentication header credentials
-	 * @param domain	  NTLM authentication
-	 * @param workstation NTLM authentication
+	 * @see #setCredentials(String, String, boolean) without preemptive authentication
 	 */
-	void setCredentials(String username, String password, String domain, String workstation);
+	void setCredentials(String username, String password);
 
 	/**
 	 * @see #list(String)
@@ -463,43 +460,5 @@ public interface Sardine
 	 * Ignores cookies.
 	 */
 	void ignoreCookies();
-
-	/**
-	 * Send a <code>Basic</code> authentication header with each request even before 401 is returned.
-	 * Uses default ports: 80 for http and 443 for https
-	 *
-	 * @param hostname The hostname to enable preemptive authentication for.
-	 */
-	void enablePreemptiveAuthentication(String hostname);
-
-	/**
-	 * Send a <code>Basic</code> authentication header with each request even before 401 is returned.
-	 *
-	 * @param url The hostname, protocol and port to enable preemptive authentication for.
-	 */
-	void enablePreemptiveAuthentication(URL url);
-
-	/**
-	 * Send a <code>Basic</code> authentication header with each request even before 401 is returned.
-	 *
-	 * @param hostname The hostname to enable preemptive authentication for.
-	 * @param httpPort The http port to enable preemptive authentication for. -1 for default value.
-	 * @param httpsPort The https port to enable preemptive authentication for. -1 for default value.
-	 */
-	void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort);
-
-	/**
-	 * Disable preemptive authentication.
-	 */
-	void disablePreemptiveAuthentication();
-
-	/**
-	 * Releasing any resources that might be held
-	 * open. This is an optional method, and callers are not expected to call
-	 * it, but can if they want to explicitly release any open resources. Once a
-	 * client has been shutdown, it should not be used to make any more
-	 * requests.
-	 */
-	void shutdown() throws IOException;
 
 }

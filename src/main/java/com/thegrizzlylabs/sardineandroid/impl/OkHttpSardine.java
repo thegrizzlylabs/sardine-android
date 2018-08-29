@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +52,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import okhttp3.Credentials;
 import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -77,14 +78,36 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void setCredentials(String username, String password) {
-        OkHttpClient.Builder builder = client.newBuilder().authenticator(new BasicAuthenticator(username, password));
+    public void setCredentials(String username, String password, boolean isPreemptive) {
+        OkHttpClient.Builder builder = client.newBuilder();
+        if (isPreemptive) {
+            builder.addInterceptor(new AuthenticationInterceptor(username, password));
+        } else {
+            builder.authenticator(new BasicAuthenticator(username, password));
+        }
         this.client = builder.build();
     }
 
     @Override
-    public void setCredentials(String username, String password, String domain, String workstation) {
-        throw new UnsupportedOperationException("Not implemented, use constructor with username and password");
+    public void setCredentials(String username, String password) {
+        setCredentials(username, password, false);
+    }
+
+    private class AuthenticationInterceptor implements Interceptor {
+
+        private String userName;
+        private String password;
+
+        public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
+            this.userName = userName;
+            this.password = password;
+        }
+
+        @Override
+        public Response intercept(@NonNull Chain chain) throws IOException {
+            Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
+            return chain.proceed(request);
+        }
     }
 
     @Override
@@ -563,32 +586,6 @@ public class OkHttpSardine implements Sardine {
     public void ignoreCookies() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void enablePreemptiveAuthentication(String hostname) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void enablePreemptiveAuthentication(URL url) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void disablePreemptiveAuthentication() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void shutdown() throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
     private void execute(Request request) throws IOException {
         execute(request, new VoidResponseHandler());
     }
