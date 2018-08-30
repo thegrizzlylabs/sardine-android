@@ -19,7 +19,6 @@ package com.thegrizzlylabs.sardineandroid;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,72 +45,17 @@ public class AuthenticationTest {
         }
     }
 
-    @Ignore
     @Test
-    public void testDigestAuth() throws Exception {
+    public void testPreemptiveBasicAuth() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        sardine.setCredentials("jenkins", "jenkins");
+        sardine.setCredentials("jenkins", "jenkins", true);
         try {
-            URI url = URI.create("http://test.cyberduck.ch/dav/digest/");
+            URI url = URI.create("http://test.cyberduck.ch/dav/basic/");
             final List<DavResource> resources = sardine.list(url.toString());
             assertNotNull(resources);
             assertFalse(resources.isEmpty());
         } catch (SardineException e) {
             fail(e.getMessage());
         }
-    }
-
-    @Ignore
-    @Test
-    public void testDigestAuthWithBasicPreemptiveAuthenticationEnabled() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        sardine.setCredentials("jenkins", "jenkins");
-        URI url = URI.create("http://test.cyberduck.ch/dav/digest/");
-        sardine.enablePreemptiveAuthentication(url.getHost());
-        assertNotNull(sardine.list(url.toString()));
-    }
-
-    @Ignore
-    @Test
-    public void testBasicPreemptiveAuth() throws Exception {
-//		final HttpClientBuilder client = HttpClientBuilder.create();
-//		final CountDownLatch count = new CountDownLatch(1);
-//		client.setDefaultCredentialsProvider(new BasicCredentialsProvider()
-//		{
-//			@Override
-//			public Credentials getCredentials(AuthScope authscope)
-//			{
-//				// Set flag that credentials have been used indicating preemptive authentication
-//				count.countDown();
-//				return new Credentials()
-//				{
-//					public Principal getUserPrincipal()
-//					{
-//						return new BasicUserPrincipal("anonymous");
-//					}
-//
-//					public String getPassword()
-//					{
-//						return "invalid";
-//					}
-//				};
-//			}
-//		});
-//		SardineImpl sardine = new SardineImpl(client);
-//		URI url = URI.create("http://test.cyberduck.ch/dav/basic/");
-//		//Send basic authentication header in initial request
-//		sardine.enablePreemptiveAuthentication(url.getHost());
-//		try
-//		{
-//			sardine.list(url.toString());
-//			fail("Expected authorization failure");
-//		}
-//		catch (SardineException e)
-//		{
-//			// Expect Authorization Failed
-//			assertEquals(401, e.getStatusCode());
-//			// Make sure credentials have been queried
-//			assertEquals("No preemptive authentication attempt", 0, count.getCount());
-//		}
     }
 }

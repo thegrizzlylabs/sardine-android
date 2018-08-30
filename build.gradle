@@ -31,8 +31,9 @@ android {
 }
 
 dependencies {
+    api 'com.squareup.okhttp3:okhttp:3.11.0'
+
     implementation 'com.android.support:support-annotations:27.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
     implementation ('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'
         exclude module: 'stax-api'
