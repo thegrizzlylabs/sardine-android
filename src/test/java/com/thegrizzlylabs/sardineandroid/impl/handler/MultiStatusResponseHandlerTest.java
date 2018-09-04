@@ -20,9 +20,9 @@ import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.model.Multistatus;
+import com.thegrizzlylabs.sardineandroid.model.Prop;
 import com.thegrizzlylabs.sardineandroid.model.Response;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -789,5 +789,105 @@ public class MultiStatusResponseHandlerTest {
             // protected acls
             assertTrue(davAcl.getAces().get(4).isProtected());
         }
+    }
+
+    @Test
+    public void testCardDAVResponse() throws  IOException {
+        String xml = "<?xml version='1.0' encoding='utf-8'?>\n" +
+                "<multistatus xmlns=\"DAV:\" xmlns:CR=\"urn:ietf:params:xml:ns:carddav\" xmlns:ns2=\"http://inf-it.com/ns/ab/\">\n" +
+                "    <response>\n" +
+                "        <href>/leoandroid01/a/</href>\n" +
+                "        <propstat>\n" +
+                "            <prop>\n" +
+                "                <principal-collection-set>\n" +
+                "                    <href>/</href>\n" +
+                "                </principal-collection-set>\n" +
+                "                <current-user-principal>\n" +
+                "                    <href>/leoandroid01/</href>\n" +
+                "                </current-user-principal>\n" +
+                "                <current-user-privilege-set>\n" +
+                "                    <privilege>\n" +
+                "                        <read />\n" +
+                "                    </privilege>\n" +
+                "                    <privilege>\n" +
+                "                        <all />\n" +
+                "                    </privilege>\n" +
+                "                    <privilege>\n" +
+                "                        <write />\n" +
+                "                    </privilege>\n" +
+                "                    <privilege>\n" +
+                "                        <write-properties />\n" +
+                "                    </privilege>\n" +
+                "                    <privilege>\n" +
+                "                        <write-content />\n" +
+                "                    </privilege>\n" +
+                "                </current-user-privilege-set>\n" +
+                "                <supported-report-set>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <expand-property />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <principal-search-property-set />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <principal-property-search />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <sync-collection />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <CR:addressbook-multiget />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                    <supported-report>\n" +
+                "                        <report>\n" +
+                "                            <CR:addressbook-query />\n" +
+                "                        </report>\n" +
+                "                    </supported-report>\n" +
+                "                </supported-report-set>\n" +
+                "                <resourcetype>\n" +
+                "                    <CR:addressbook />\n" +
+                "                    <collection />\n" +
+                "                </resourcetype>\n" +
+                "                <owner>\n" +
+                "                    <href>/leoandroid01/</href>\n" +
+                "                </owner>\n" +
+                "                <getetag>\"f897be958cef754667b27f56f16eebbc\"</getetag>\n" +
+                "                <getlastmodified>Mon, 03 Sep 2018 17:16:30 GMT</getlastmodified>\n" +
+                "                <getcontenttype>text/vcard</getcontenttype>\n" +
+                "                <getcontentlength>26845</getcontentlength>\n" +
+                "                <displayname>a</displayname>\n" +
+                "                <sync-token>http://radicale.org/ns/sync/57807f4b156e24c14bcd01ed1c853ea8</sync-token>\n" +
+                "                <CR:addressbook-description>vaddressbook-default</CR:addressbook-description>\n" +
+                "                <ns2:addressbook-color>#c5cddaff</ns2:addressbook-color>\n" +
+                "            </prop>\n" +
+                "            <status>HTTP/1.1 200 OK</status>\n" +
+                "        </propstat>\n" +
+                "    </response>\n" +
+                "</multistatus>";
+
+        MultiStatusResponseHandler handler = new MultiStatusResponseHandler();
+        Multistatus status = handler.getMultistatus(new ByteArrayInputStream(xml.getBytes()));
+        assertNotNull(status);
+        assertEquals(1, status.getResponse().size());
+        Response response = status.getResponse().get(0);
+        assertEquals("/leoandroid01/a/", response.getHref());
+        Prop prop = response.getPropstat().get(0).getProp();
+        assertEquals("/", prop.getPrincipalCollectionSet().getHref());
+        assertEquals("/leoandroid01/", prop.getPrincipalURL().getHref());
+        assertEquals(5, prop.getCurrentUserPrivilegeSet().privileges.size());
+        assertNotNull(prop.getResourcetype().getCollection());
+        assertEquals(1, prop.getResourcetype().getAny().size());
+        assertEquals("/leoandroid01/", prop.getOwner().getHref());
+        assertEquals(2, prop.getAny().size());
     }
 }
