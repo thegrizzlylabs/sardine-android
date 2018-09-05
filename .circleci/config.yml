@@ -23,9 +23,9 @@ jobs:
       - run:
           name: Publish on Maven
           command: |
-            VERSION=$(git tag --points-at HEAD) # Get current tag if any
+            echo $CIRCLE_TAG
             # Check correct tag format, strip leading "v" and publish
-            if [[ $VERSION =~ ^v(.*)$ ]]; then
+            if [[ $CIRCLE_TAG =~ ^v(.*)$ ]]; then
               VERSION=${BASH_REMATCH[1]}
               ./gradlew bintrayUpload -PgitVersion=$VERSION
             fi
@@ -34,3 +34,13 @@ jobs:
           destination: reports
       - store_test_results:
           path: build/test-results
+
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+              
