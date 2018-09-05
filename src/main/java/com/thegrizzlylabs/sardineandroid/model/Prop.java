@@ -9,22 +9,12 @@
 package com.thegrizzlylabs.sardineandroid.model;
 
 
-import com.thegrizzlylabs.sardineandroid.ElementConverter;
-import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.Converter;
-import org.simpleframework.xml.stream.InputNode;
-import org.simpleframework.xml.stream.OutputNode;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -59,7 +49,7 @@ import java.util.Map;
 
 @Root(strict = false)
 @Namespace(prefix = "D", reference = "DAV:")
-public class Prop {
+public class Prop implements EntityWithAnyElement {
 
     @Element(required = false)
     protected String creationdate;
@@ -101,6 +91,10 @@ public class Prop {
 
     public Resourcetype getResourcetype() {
         return resourcetype;
+    }
+
+    public void setResourcetype(Resourcetype resourcetype) {
+        this.resourcetype = resourcetype;
     }
 
     public String getCreationdate() {
@@ -159,6 +153,14 @@ public class Prop {
         this.getlastmodified = getlastmodified;
     }
 
+    public void setSupportedlock(Supportedlock supportedlock) {
+        this.supportedlock = supportedlock;
+    }
+
+    public Supportedlock getSupportedlock() {
+        return supportedlock;
+    }
+
     //ACL elements
     @Element(required = false)
     protected Owner owner;
@@ -171,10 +173,13 @@ public class Prop {
 
 
     @Element(name="principal-collection-set", required = false)
-    protected PrincipalCollectionSet principalCollectionSet;
+    private PrincipalCollectionSet principalCollectionSet;
 
-    @Element(name="principal-URL", required = false)
-    protected PrincipalURL principalURL;
+    @Element(name="current-user-principal", required = false)
+    private PrincipalURL principalURL;
+
+    @Element(name="current-user-privilege-set")
+    private CurrentUserPrivilegeSet currentUserPrivilegeSet;
 
     /**
      * Gets the value of the lockdiscovery property.
@@ -256,6 +261,7 @@ public class Prop {
      * Objects of the following type(s) are allowed in the list
      * {@link Element }
      */
+    @Override
     public List<org.w3c.dom.Element> getAny() {
         if (any == null) {
             any = new ArrayList<>();
@@ -303,64 +309,11 @@ public class Prop {
 		this.principalURL = principalURL;
 	}
 
-    public static class PropConverter implements Converter<Prop> {
+    public void setCurrentUserPrivilegeSet(CurrentUserPrivilegeSet currentUserPrivilegeSet) {
+        this.currentUserPrivilegeSet = currentUserPrivilegeSet;
+    }
 
-        private Serializer serializer;
-
-        public PropConverter(Serializer serializer) {
-            this.serializer = serializer;
-        }
-
-        private Map<String, Field> getPropElements() {
-            Map<String, Field> elementsFields = new HashMap<>();
-            for (Field field : Prop.class.getDeclaredFields()) {
-                Element fieldAnnotation = field.getAnnotation(Element.class);
-                if (fieldAnnotation != null) {
-                    String name = fieldAnnotation.name().equals("") ? field.getName() : fieldAnnotation.name();
-                    elementsFields.put(name, field);
-                }
-            }
-            return elementsFields;
-        }
-
-        @Override
-        public Prop read(InputNode node) throws Exception {
-            Map<String, Field> propElements = getPropElements();
-            Prop prop = new Prop();
-            List<org.w3c.dom.Element> anyElements = prop.getAny();
-            InputNode childNode;
-            while((childNode = node.getNext()) != null) {
-                if (propElements.containsKey(childNode.getName())) {
-                    Field field = propElements.get(childNode.getName());
-                    field.set(prop, serializer.read(field.getType(), childNode));
-                } else {
-                    org.w3c.dom.Element element = ElementConverter.read(childNode);
-                    anyElements.add(element);
-                }
-            }
-            return prop;
-        }
-
-        @Override
-        public void write(OutputNode node, Prop prop) throws Exception {
-            for(org.w3c.dom.Element domElement : prop.getAny()) {
-                ElementConverter.write(node, domElement);
-            }
-            Map<String, Field> propElements = getPropElements();
-            for (String fieldName : propElements.keySet()) {
-                Field field = propElements.get(fieldName);
-                Object value = field.get(prop);
-                if (value == null) {
-                    continue;
-                }
-                if (value instanceof String) {
-                    OutputNode childNode = node.getChild(fieldName);
-                    childNode.setReference(SardineUtil.DEFAULT_NAMESPACE_URI);
-                    childNode.setValue((String)value);
-                } else {
-                    serializer.write(value, node);
-                }
-            }
-        }
+    public CurrentUserPrivilegeSet getCurrentUserPrivilegeSet() {
+        return currentUserPrivilegeSet;
     }
 }

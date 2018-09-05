@@ -563,7 +563,7 @@ public class OkHttpSardine implements Sardine {
                         if (propstat.getProp() != null
                                 && propstat.getProp().getPrincipalCollectionSet() != null
                                 && propstat.getProp().getPrincipalCollectionSet().getHref() != null) {
-                            collections.addAll(propstat.getProp().getPrincipalCollectionSet().getHref());
+                            collections.add(propstat.getProp().getPrincipalCollectionSet().getHref());
                         }
                     }
                 }

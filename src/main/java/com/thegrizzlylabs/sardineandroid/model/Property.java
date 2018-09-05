@@ -8,7 +8,7 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
-import com.thegrizzlylabs.sardineandroid.ElementConverter;
+import com.thegrizzlylabs.sardineandroid.util.ElementConverter;
 
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;

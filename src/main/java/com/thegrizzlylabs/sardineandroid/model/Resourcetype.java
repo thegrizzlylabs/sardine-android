@@ -8,9 +8,9 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
-import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,14 +38,14 @@ import java.util.List;
  */
 @Root
 @Namespace(prefix = "D", reference = "DAV:")
-public class Resourcetype {
+public class Resourcetype implements EntityWithAnyElement {
 
-    @org.simpleframework.xml.Element(required = false)
+    @Element(required = false)
     private Collection collection;
 
     private Principal principal;
-    //@XmlAnyElement
-    private List<Element> any;
+
+    private List<org.w3c.dom.Element> any;
 
     /**
      * Gets the value of the collection property.
@@ -101,9 +101,10 @@ public class Resourcetype {
      * 
      * 
      */
-    public List<Element> getAny() {
+	@Override
+    public List<org.w3c.dom.Element> getAny() {
         if (any == null) {
-            any = new ArrayList<Element>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

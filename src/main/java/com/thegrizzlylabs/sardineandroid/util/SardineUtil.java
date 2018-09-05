@@ -2,9 +2,9 @@ package com.thegrizzlylabs.sardineandroid.util;
 
 import com.thegrizzlylabs.sardineandroid.model.Prop;
 import com.thegrizzlylabs.sardineandroid.model.Property;
+import com.thegrizzlylabs.sardineandroid.model.Resourcetype;
 
 import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.Converter;
 import org.simpleframework.xml.convert.Registry;
 import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
@@ -121,9 +121,9 @@ public final class SardineUtil {
         Registry registry = new Registry();
         Strategy strategy = new RegistryStrategy(registry);
         Serializer serializer = new Persister(strategy, format);
-        Converter<Prop> converter = new Prop.PropConverter(serializer);
 
-        registry.bind(Prop.class, converter);
+        registry.bind(Prop.class, new EntityWithAnyElementConverter<>(serializer, Prop.class));
+        registry.bind(Resourcetype.class, new EntityWithAnyElementConverter<>(serializer, Resourcetype.class));
         registry.bind(Property.class, Property.PropertyConverter.class);
 
         return serializer;

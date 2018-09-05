@@ -8,10 +8,9 @@
 
 package com.thegrizzlylabs.sardineandroid.model;
 
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
-
-import java.util.List;
 
 
 /**
@@ -37,15 +36,14 @@ import java.util.List;
 @Namespace(prefix = "D", reference = "DAV:")
 public class PrincipalCollectionSet {
 
-	private List<String> href;
+	@Element(required = false)
+	protected String href;
 
- 
-
-	public List<String> getHref() {
+	public String getHref() {
 		return href;
 	}
 
-	public void setHref(List<String> href) {
+	public void setHref(String href) {
 		this.href = href;
 	}
 

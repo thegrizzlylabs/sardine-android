@@ -1,6 +1,4 @@
-package com.thegrizzlylabs.sardineandroid;
-
-import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
+package com.thegrizzlylabs.sardineandroid.util;
 
 import org.simpleframework.xml.stream.InputNode;
 import org.simpleframework.xml.stream.OutputNode;
