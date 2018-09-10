@@ -9,3 +9,6 @@
 
 ## Sardine Android model classes: needed for XML serialization
 -keep class com.thegrizzlylabs.sardineandroid.model.**{ *; }
+
+## OkHTTP
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
