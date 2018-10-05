@@ -890,4 +890,51 @@ public class MultiStatusResponseHandlerTest {
         assertEquals("/leoandroid01/", prop.getOwner().getHref());
         assertEquals(2, prop.getAny().size());
     }
+
+    @Test
+    public void testJianguoyunResponse() throws IOException {
+        String inputXML =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<d:multistatus xmlns:d=\"DAV:\" xmlns:s=\"http://ns.jianguoyun.com\">\n" +
+                "   <d:response>\n" +
+                "      <d:href>/dav/Folder1/Folder2</d:href>\n" +
+                "      <d:propstat>\n" +
+                "         <d:prop>\n" +
+                "            <d:getlastmodified>Wed, 18 Apr 2018 08:09:40 GMT</d:getlastmodified>\n" +
+                "            <d:getcontentlength>0</d:getcontentlength>\n" +
+                "            <d:getetag />\n" +
+                "            <d:owner>test@test.com</d:owner>\n" +
+                "            <d:current-user-privilege-set>\n" +
+                "               <d:privilege>\n" +
+                "                  <d:read />\n" +
+                "               </d:privilege>\n" +
+                "               <d:privilege>\n" +
+                "                  <d:write />\n" +
+                "               </d:privilege>\n" +
+                "               <d:privilege>\n" +
+                "                  <d:all />\n" +
+                "               </d:privilege>\n" +
+                "               <d:privilege>\n" +
+                "                  <d:read_acl />\n" +
+                "               </d:privilege>\n" +
+                "               <d:privilege>\n" +
+                "                  <d:write_acl />\n" +
+                "               </d:privilege>\n" +
+                "            </d:current-user-privilege-set>\n" +
+                "            <d:getcontenttype>httpd/unix-directory</d:getcontenttype>\n" +
+                "            <d:displayname>Folder2</d:displayname>\n" +
+                "            <d:resourcetype>\n" +
+                "               <d:collection />\n" +
+                "            </d:resourcetype>\n" +
+                "         </d:prop>\n" +
+                "         <d:status>HTTP/1.1 200 OK</d:status>\n" +
+                "      </d:propstat>\n" +
+                "   </d:response>" +
+                "</d:multistatus>";
+
+        MultiStatusResponseHandler handler = new MultiStatusResponseHandler();
+        Multistatus status = handler.getMultistatus(new ByteArrayInputStream(inputXML.getBytes()));
+        Prop prop = status.getResponse().get(0).getPropstat().get(0).getProp();
+        assertEquals(5, prop.getCurrentUserPrivilegeSet().privileges.size());
+    }
 }
