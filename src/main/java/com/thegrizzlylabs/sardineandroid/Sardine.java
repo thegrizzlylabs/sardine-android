@@ -197,7 +197,7 @@ public interface Sardine
 	// InputStream not supported
 	// See https://github.com/square/okhttp/issues/2424
 
-	// void put(String url, InputStream dataStream) throws IOException;
+	void put(String url, InputStream dataStream) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content type
@@ -219,7 +219,7 @@ public interface Sardine
 	 * @param contentType MIME type to add to the HTTP request header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType) throws IOException;
+	void put(String url, InputStream dataStream, String contentType) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content
@@ -231,7 +231,7 @@ public interface Sardine
 	 * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType, boolean expectContinue) throws IOException;
+	void put(String url, InputStream dataStream, String contentType, boolean expectContinue) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content

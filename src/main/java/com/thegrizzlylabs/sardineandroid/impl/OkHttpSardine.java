@@ -313,6 +313,27 @@ public class OkHttpSardine implements Sardine {
         put(url, requestBody, headersBuilder.build());
     }
 
+    @Override
+    public void put(String url, InputStream is) throws IOException {
+        put (url, is, null, false);
+    }
+
+    @Override
+    public void put(String url, InputStream is, String contentType) throws IOException {
+       put (url, is, contentType, false);
+    }
+
+    @Override
+    public void put(String url, InputStream is, String contentType, boolean expectContinue) throws IOException {
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+        RequestBody requestBody = RequestBodyUtil.create(mediaType, is);
+        Headers.Builder headersBuilder = new Headers.Builder();
+        if (expectContinue) {
+            headersBuilder.add("Expect", "100-Continue");
+        }
+        put(url, requestBody, headersBuilder.build());
+    }
+
     private void put(String url, RequestBody requestBody) throws IOException {
         put(url, requestBody, new Headers.Builder().build());
     }
