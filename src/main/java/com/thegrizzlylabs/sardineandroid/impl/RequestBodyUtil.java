@@ -1,6 +1,10 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
 
+import android.content.ContentResolver;
+import android.net.Uri;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,8 +21,22 @@ import okio.Source;
 
 public class RequestBodyUtil {
 
-    public static RequestBody create(final MediaType mediaType, final InputStream inputStream) {
+    public static RequestBody create(final ContentResolver cr, final Uri uri, final MediaType mediaType) {
+
+
         return new RequestBody() {
+
+            InputStream inputStream = null;
+
+            private void init ()
+            {
+                try {
+                    inputStream = cr.openInputStream(uri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
             @Override
             public MediaType contentType() {
                 return mediaType;
@@ -27,18 +45,24 @@ public class RequestBodyUtil {
             @Override
             public long contentLength() {
                 try {
-                    return inputStream.available();
+                    init();
+                    long length = inputStream.available();
+                    inputStream.close();
+                    return length;
                 } catch (IOException e) {
                     return 0;
                 }
             }
 
             @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                Source source = null;
+            public synchronized void writeTo(BufferedSink sink) throws IOException {
+
+                init();
+                Source source = Okio.source(inputStream);
+
                 try {
-                    source = Okio.source(inputStream);
                     sink.writeAll(source);
+
                 } finally {
                     Util.closeQuietly(source);
                 }

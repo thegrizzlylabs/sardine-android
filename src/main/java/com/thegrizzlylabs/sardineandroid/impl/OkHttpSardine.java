@@ -1,6 +1,9 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
@@ -314,31 +317,36 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(String url, InputStream is) throws IOException {
-        put (url, is, null, false);
+    public void put(ContentResolver cr, String url, Uri is) throws IOException {
+        put (cr, url, is, null, false);
     }
 
     @Override
-    public void put(String url, InputStream is, String contentType) throws IOException {
-       put (url, is, contentType, false);
+    public void put(ContentResolver cr, String url, Uri is, String contentType) throws IOException {
+       put (cr, url, is, contentType, false);
     }
 
     @Override
-    public void put(String url, InputStream is, String contentType, boolean expectContinue) throws IOException {
+    public void put(ContentResolver cr, String url, Uri is, String contentType, boolean expectContinue) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBodyUtil.create(mediaType, is);
+        RequestBody requestBody = RequestBodyUtil.create(cr, is, mediaType);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
         }
+
+        if (!TextUtils.isEmpty(contentType)) {
+            headersBuilder.add("Content-Type", contentType);
+        }
+
         put(url, requestBody, headersBuilder.build());
     }
 
     @Override
-    public void put(String url, InputStream dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException
+    public void put(ContentResolver cr, String url, Uri dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException
     {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBodyUtil.create(mediaType, dataStream);
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, mediaType);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -350,9 +358,9 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(String url, InputStream dataStream, Map<String, String> headers) throws IOException
+    public void put(ContentResolver cr, String url, Uri dataStream, Map<String, String> headers) throws IOException
     {
-        RequestBody requestBody = RequestBodyUtil.create(null, dataStream);
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, null);
         Headers.Builder headersBuilder = new Headers.Builder();
         for (String key : headers.keySet())
             headersBuilder.add(key,headers.get(key));
