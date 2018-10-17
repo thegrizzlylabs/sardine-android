@@ -244,7 +244,7 @@ public interface Sardine
 	 * @param contentLength data size in bytes to set to Content-Length header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException;
+	void put(String url, InputStream dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with specific headers. Not repeatable
@@ -255,7 +255,7 @@ public interface Sardine
 	 * @param headers	Additional HTTP headers to add to the request
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, Map<String, String> headers) throws IOException;
+	void put(String url, InputStream dataStream, Map<String, String> headers) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to upload file to a server with specific contentType.
