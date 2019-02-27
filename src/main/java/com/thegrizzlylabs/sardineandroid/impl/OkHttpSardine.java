@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 
@@ -88,6 +89,12 @@ public class OkHttpSardine implements Sardine {
         } else {
             builder.authenticator(new BasicAuthenticator(username, password));
         }
+
+        builder.connectTimeout(30 , TimeUnit.SECONDS)
+                .writeTimeout(30 ,TimeUnit.SECONDS)
+                .readTimeout(30 ,TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false);
+
         this.client = builder.build();
     }
 
