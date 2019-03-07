@@ -39,8 +39,8 @@ import java.util.List;
 @Namespace(prefix = "D", reference = "DAV:")
 public class Supportedlock {
 
-    @ElementList(inline = true)
-    private List<Lockentry> lockentry;
+    @ElementList(inline = true, required = false)
+    private List<Lockentry> lockentryList;
 
     /**
      * Gets the value of the lockentry property.
@@ -64,11 +64,11 @@ public class Supportedlock {
      * 
      * 
      */
-    public List<Lockentry> getLockentry() {
-        if (lockentry == null) {
-            lockentry = new ArrayList<Lockentry>();
+    public List<Lockentry> getLockentryList() {
+        if (lockentryList == null) {
+            lockentryList = new ArrayList<>();
         }
-        return this.lockentry;
+        return lockentryList;
     }
 
 }

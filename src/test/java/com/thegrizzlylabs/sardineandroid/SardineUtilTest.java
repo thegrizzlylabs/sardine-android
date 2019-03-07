@@ -112,5 +112,25 @@ public class SardineUtilTest {
         assertEquals("Thu, 07 Jul 2016 07:15:17 GMT", prop.getGetlastmodified());
         assertEquals("\"f45e6a-1f-5370672b15b20\"", prop.getGetetag());
         assertEquals("text/plain", prop.getGetcontenttype());
+        assertEquals(2, prop.getSupportedlock().getLockentryList().size());
+    }
+
+    @Test
+    public void testEmptySupportedLock() throws Exception {
+        String xml =
+                "<D:prop xmlns:D=\"DAV:\">\n" +
+                        "   <D:resourcetype/>\n" +
+                        "   <D:creationdate>2016-07-07T07:15:17Z</D:creationdate>\n" +
+                        "   <D:getcontentlength>31</D:getcontentlength>\n" +
+                        "   <D:getlastmodified>Thu, 07 Jul 2016 07:15:17 GMT</D:getlastmodified>\n" +
+                        "   <D:getetag>\"f45e6a-1f-5370672b15b20\"</D:getetag>\n" +
+                        "   <D:executable>F</D:executable>\n" +
+                        "   <D:supportedlock/>\n" +
+                        "   <D:lockdiscovery/>\n" +
+                        "   <D:getcontenttype>text/plain</D:getcontenttype>\n" +
+                        "</D:prop>";
+
+        Prop prop = SardineUtil.unmarshal(Prop.class, new ByteArrayInputStream(xml.getBytes()));
+        assertTrue(prop.getSupportedlock().getLockentryList().isEmpty());
     }
 }
