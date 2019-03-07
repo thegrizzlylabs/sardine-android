@@ -37,27 +37,28 @@ import static org.junit.Assert.assertTrue;
  */
 public class SardineUtilTest {
     @Test
-    public void testParseDate() throws Exception {
+    public void testParseDate() {
         assertNotNull(SardineUtil.parseDate("2007-07-16T13:35:49Z"));
         assertNotNull(SardineUtil.parseDate("Mon, 16 Jul 2007 13:35:49 GMT"));
     }
 
     @Test
-    public void createPropfindXml() throws Exception {
+    public void testAllpropSerialization() {
         Propfind body = new Propfind();
         body.setAllprop(new Allprop());
         String xml = SardineUtil.toXml(body);
-        checkXmlDeclaration(xml);
         assertThat(xml, containsString("propfind>"));
         assertThat(xml, containsString("allprop/>"));
     }
 
-    private void checkXmlDeclaration(final String xml) {
+    @Test
+    public void testXmlVersionDeclaration() {
+        String xml = SardineUtil.toXml(new Propfind());
         assertTrue(xml.startsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"));
     }
 
     @Test
-    public void testPropSerialization() throws Exception {
+    public void testPropSerialization() {
         Prop prop = new Prop();
         List<Element> any = prop.getAny();
         Element element1 = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("hello"));
