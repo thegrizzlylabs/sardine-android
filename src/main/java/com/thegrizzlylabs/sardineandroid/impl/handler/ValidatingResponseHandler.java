@@ -19,6 +19,7 @@ public abstract class ValidatingResponseHandler<T> implements ResponseHandler<T>
      */
     protected void validateResponse(Response response) throws SardineException {
         if (!response.isSuccessful()) {
+            response.close();
             String message = "Error contacting " + response.request().url();
             throw new SardineException(message, response.code(), response.message());
         }
