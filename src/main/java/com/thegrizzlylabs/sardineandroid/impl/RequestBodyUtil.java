@@ -25,9 +25,9 @@ import okio.Source;
 
 public class RequestBodyUtil {
 
-    private static final int SEGMENT_SIZE = 4096; // okio.Segment.SIZE
+    private static final int SEGMENT_SIZE = 2048; // okio.Segment.SIZE
 
-    public static RequestBody create(final ContentResolver cr, final Uri uri, final MediaType mediaType, final SardineListener listener) {
+    public static RequestBody create(final ContentResolver cr, final Uri uri, final long contentLength, final MediaType mediaType, final SardineListener listener) {
 
         return new RequestBody() {
 
@@ -49,14 +49,7 @@ public class RequestBodyUtil {
 
             @Override
             public long contentLength() {
-                try {
-                    init();
-                    long length = inputStream.available();
-                    inputStream.close();
-                    return length;
-                } catch (IOException e) {
-                    return 0;
-                }
+                return contentLength;
             }
 
             @Override
@@ -109,14 +102,7 @@ public class RequestBodyUtil {
 
             @Override
             public long contentLength() {
-                try {
-                    init();
-                    long length = inputStream.available();
-                    inputStream.close();
-                    return length;
-                } catch (IOException e) {
-                    return 0;
-                }
+                return fileSource.length();
             }
 
             @Override
