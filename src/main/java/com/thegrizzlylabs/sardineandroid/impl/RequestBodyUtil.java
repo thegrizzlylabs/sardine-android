@@ -58,20 +58,26 @@ public class RequestBodyUtil {
                 init();
                 Source source = Okio.source(inputStream);
 
-                try {
+                if (listener == null) {
+                    sink.writeAll(source);
+                }
+                else {
 
-                    long total = 0;
-                    long read;
+                    try {
 
-                    while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
-                        total += read;
-                        listener.transferred(total);
-                        sink.flush();
+                        long total = 0;
+                        long read;
+
+                        while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
+                            total += read;
+                            listener.transferred(total);
+                            sink.flush();
+                        }
+
+
+                    } finally {
+                        Util.closeQuietly(source);
                     }
-                    
-
-                } finally {
-                    Util.closeQuietly(source);
                 }
 
             }
@@ -109,22 +115,26 @@ public class RequestBodyUtil {
                 init();
                 Source source = Okio.source(inputStream);
 
-                try {
+                if (listener == null)
+                {
+                    sink.writeAll(source);
+                }
+                else {
+                    try {
 
-                    long total = 0;
-                    long read;
+                        long total = 0;
+                        long read;
 
-                    while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
-                        total += read;
-                        if (listener != null)
+                        while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
+                            total += read;
                             listener.transferred(total);
+                        }
 
+                        sink.flush();
+
+                    } finally {
+                        Util.closeQuietly(source);
                     }
-
-                    sink.flush();
-
-                } finally {
-                    Util.closeQuietly(source);
                 }
 
             }
