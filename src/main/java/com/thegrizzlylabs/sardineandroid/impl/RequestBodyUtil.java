@@ -25,7 +25,7 @@ import okio.Source;
 
 public class RequestBodyUtil {
 
-    private static final int SEGMENT_SIZE = 2048; // okio.Segment.SIZE
+    private static final int SEGMENT_SIZE = 4096; // okio.Segment.SIZE
 
     public static RequestBody create(final ContentResolver cr, final Uri uri, final MediaType mediaType, final SardineListener listener) {
 
@@ -72,10 +72,12 @@ public class RequestBodyUtil {
 
                     while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
                         total += read;
-                        sink.flush();
                         listener.transferred(total);
 
                     }
+
+                    sink.flush();
+
 
                 } finally {
                     Util.closeQuietly(source);
@@ -130,17 +132,19 @@ public class RequestBodyUtil {
 
                     while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
                         total += read;
-                        sink.flush();
                         if (listener != null)
                             listener.transferred(total);
 
                     }
+
+                    sink.flush();
 
                 } finally {
                     Util.closeQuietly(source);
                 }
 
             }
+
         };
     }
 }
