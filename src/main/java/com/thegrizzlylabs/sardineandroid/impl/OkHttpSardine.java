@@ -11,6 +11,7 @@ import com.thegrizzlylabs.sardineandroid.DavPrincipal;
 import com.thegrizzlylabs.sardineandroid.DavQuota;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.Sardine;
+import com.thegrizzlylabs.sardineandroid.SardineListener;
 import com.thegrizzlylabs.sardineandroid.impl.handler.ExistsResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.InputStreamResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.LockResponseHandler;
@@ -295,27 +296,27 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(String url, byte[] data) throws IOException {
-        this.put(url, data, null);
+    public void put(String url, byte[] data, SardineListener listener) throws IOException {
+        this.put(url, data, null, listener);
     }
 
     @Override
-    public void put(String url, byte[] data, String contentType) throws IOException {
+    public void put(String url, byte[] data, String contentType, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         RequestBody requestBody = RequestBody.create(mediaType, data);
         put(url, requestBody);
     }
 
     @Override
-    public void put(String url, File localFile, String contentType) throws IOException {
+    public void put(String url, File localFile, String contentType, SardineListener listener) throws IOException {
         //don't use ExpectContinue for repetable FileEntity, some web server (IIS for exmaple) may return 400 bad request after retry
-        put(url, localFile, contentType, false);
+        put(url, localFile, contentType, false, listener);
     }
 
     @Override
-    public void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException {
+    public void put(String url, File localFile, String contentType, boolean expectContinue, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, localFile);
+        RequestBody requestBody = RequestBodyUtil.create(localFile, mediaType, listener);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -324,19 +325,19 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(ContentResolver cr, String url, Uri is) throws IOException {
-        put (cr, url, is, null, false);
+    public void put(ContentResolver cr, String url, Uri is, SardineListener listener) throws IOException {
+        put (cr, url, is, null, false, listener);
     }
 
     @Override
-    public void put(ContentResolver cr, String url, Uri is, String contentType) throws IOException {
-       put (cr, url, is, contentType, false);
+    public void put(ContentResolver cr, String url, Uri is, String contentType, SardineListener listener) throws IOException {
+       put (cr, url, is, contentType, false, listener);
     }
 
     @Override
-    public void put(ContentResolver cr, String url, Uri is, String contentType, boolean expectContinue) throws IOException {
+    public void put(ContentResolver cr, String url, Uri is, String contentType, boolean expectContinue, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBodyUtil.create(cr, is, mediaType);
+        RequestBody requestBody = RequestBodyUtil.create(cr, is, mediaType, listener);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -350,10 +351,10 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(ContentResolver cr, String url, Uri dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException
+    public void put(ContentResolver cr, String url, Uri dataStream, String contentType, boolean expectContinue, long contentLength, SardineListener listener) throws IOException
     {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, mediaType);
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, mediaType, listener);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -365,9 +366,9 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(ContentResolver cr, String url, Uri dataStream, Map<String, String> headers) throws IOException
+    public void put(ContentResolver cr, String url, Uri dataStream, Map<String, String> headers, SardineListener listener) throws IOException
     {
-        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, null);
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, null, listener);
         Headers.Builder headersBuilder = new Headers.Builder();
         for (String key : headers.keySet())
             headersBuilder.add(key,headers.get(key));
