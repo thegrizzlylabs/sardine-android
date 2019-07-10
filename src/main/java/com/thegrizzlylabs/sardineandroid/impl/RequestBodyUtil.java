@@ -66,11 +66,9 @@ public class RequestBodyUtil {
                     while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
                         total += read;
                         listener.transferred(total);
-
+                        sink.flush();
                     }
-
-                    sink.flush();
-
+                    
 
                 } finally {
                     Util.closeQuietly(source);
