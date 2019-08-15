@@ -1,6 +1,9 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
@@ -8,6 +11,7 @@ import com.thegrizzlylabs.sardineandroid.DavPrincipal;
 import com.thegrizzlylabs.sardineandroid.DavQuota;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.Sardine;
+import com.thegrizzlylabs.sardineandroid.SardineListener;
 import com.thegrizzlylabs.sardineandroid.impl.handler.ExistsResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.InputStreamResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.LockResponseHandler;
@@ -49,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 
@@ -85,6 +90,12 @@ public class OkHttpSardine implements Sardine {
         } else {
             builder.authenticator(new BasicAuthenticator(username, password));
         }
+
+        builder.connectTimeout(30 , TimeUnit.SECONDS)
+                .writeTimeout(30 ,TimeUnit.SECONDS)
+                .readTimeout(30 ,TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false);
+
         this.client = builder.build();
     }
 
@@ -285,31 +296,83 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
-    public void put(String url, byte[] data) throws IOException {
-        this.put(url, data, null);
+    public void put(String url, byte[] data, SardineListener listener) throws IOException {
+        this.put(url, data, null, listener);
     }
 
     @Override
-    public void put(String url, byte[] data, String contentType) throws IOException {
+    public void put(String url, byte[] data, String contentType, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         RequestBody requestBody = RequestBody.create(mediaType, data);
         put(url, requestBody);
     }
 
     @Override
-    public void put(String url, File localFile, String contentType) throws IOException {
+    public void put(String url, File localFile, String contentType, SardineListener listener) throws IOException {
         //don't use ExpectContinue for repetable FileEntity, some web server (IIS for exmaple) may return 400 bad request after retry
-        put(url, localFile, contentType, false);
+        put(url, localFile, contentType, false, listener);
     }
 
     @Override
-    public void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException {
+    public void put(String url, File localFile, String contentType, boolean expectContinue, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, localFile);
+        RequestBody requestBody = RequestBodyUtil.create(localFile, mediaType, listener);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
         }
+        put(url, requestBody, headersBuilder.build());
+    }
+
+    @Override
+    public void put(ContentResolver cr, String url, Uri is, long contentLength, SardineListener listener) throws IOException {
+        put (cr, url, is, contentLength, null, false, listener);
+    }
+
+    @Override
+    public void put(ContentResolver cr, String url, Uri is,  long contentLength, String contentType, SardineListener listener) throws IOException {
+       put (cr, url, is, contentLength, contentType, false, listener);
+    }
+
+    @Override
+    public void put(ContentResolver cr, String url, Uri is,  long contentLength, String contentType, boolean expectContinue, SardineListener listener) throws IOException {
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+        RequestBody requestBody = RequestBodyUtil.create(cr, is, contentLength, mediaType, listener);
+        Headers.Builder headersBuilder = new Headers.Builder();
+        if (expectContinue) {
+            headersBuilder.add("Expect", "100-Continue");
+        }
+
+        if (!TextUtils.isEmpty(contentType)) {
+            headersBuilder.add("Content-Type", contentType);
+        }
+
+        put(url, requestBody, headersBuilder.build());
+    }
+
+    @Override
+    public void put(ContentResolver cr, String url, Uri dataStream, String contentType, boolean expectContinue, long contentLength, SardineListener listener) throws IOException
+    {
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, contentLength, mediaType, listener);
+        Headers.Builder headersBuilder = new Headers.Builder();
+        if (expectContinue) {
+            headersBuilder.add("Expect", "100-Continue");
+        }
+
+        headersBuilder.add("Content-Length", contentLength + "");
+
+        put(url, requestBody, headersBuilder.build());
+    }
+
+    @Override
+    public void put(ContentResolver cr, String url, Uri dataStream, long contentLength, Map<String, String> headers, SardineListener listener) throws IOException
+    {
+        RequestBody requestBody = RequestBodyUtil.create(cr, dataStream, contentLength, null, listener);
+        Headers.Builder headersBuilder = new Headers.Builder();
+        for (String key : headers.keySet())
+            headersBuilder.add(key,headers.get(key));
+
         put(url, requestBody, headersBuilder.build());
     }
 

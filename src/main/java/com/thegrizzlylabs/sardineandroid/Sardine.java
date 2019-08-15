@@ -1,5 +1,8 @@
 package com.thegrizzlylabs.sardineandroid;
 
+import android.content.ContentResolver;
+import android.net.Uri;
+
 import com.thegrizzlylabs.sardineandroid.report.SardineReport;
 
 import org.w3c.dom.Element;
@@ -184,7 +187,7 @@ public interface Sardine
 	 * @param data Input source
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	void put(String url, byte[] data) throws IOException;
+	void put(String url, byte[] data, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server. Not repeatable on authentication failure.
@@ -197,7 +200,7 @@ public interface Sardine
 	// InputStream not supported
 	// See https://github.com/square/okhttp/issues/2424
 
-	// void put(String url, InputStream dataStream) throws IOException;
+	void put(ContentResolver cr, String url, Uri dataStream, long contentLength, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content type
@@ -208,7 +211,7 @@ public interface Sardine
 	 * @param contentType MIME type to add to the HTTP request header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	void put(String url, byte[] data, String contentType) throws IOException;
+	void put(String url, byte[] data, String contentType, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content
@@ -219,7 +222,7 @@ public interface Sardine
 	 * @param contentType MIME type to add to the HTTP request header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType) throws IOException;
+	void put(ContentResolver cr, String url, Uri dataStream, long contentLength, String contentType, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content
@@ -231,7 +234,7 @@ public interface Sardine
 	 * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType, boolean expectContinue) throws IOException;
+	void put(ContentResolver cr, String url, Uri dataStream, long contentLength, String contentType, boolean expectContinue, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content
@@ -244,7 +247,7 @@ public interface Sardine
 	 * @param contentLength data size in bytes to set to Content-Length header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, String contentType, boolean expectContinue, long contentLength) throws IOException;
+	void put(ContentResolver cr, String url, Uri dataStream, String contentType, boolean expectContinue, long contentLength, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with specific headers. Not repeatable
@@ -255,7 +258,7 @@ public interface Sardine
 	 * @param headers	Additional HTTP headers to add to the request
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	//void put(String url, InputStream dataStream, Map<String, String> headers) throws IOException;
+	void put(ContentResolver cr, String url, Uri dataStream, long contentLength, Map<String, String> headers, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to upload file to a server with specific contentType.
@@ -266,7 +269,7 @@ public interface Sardine
 	 * @param contentType	MIME type to add to the HTTP request header
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	void put(String url, File localFile, String contentType) throws IOException;
+	void put(String url, File localFile, String contentType, SardineListener listener) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to upload file to a server with specific contentType.
@@ -278,7 +281,7 @@ public interface Sardine
 	 * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException;
+	void put(String url, File localFile, String contentType, boolean expectContinue, SardineListener listener) throws IOException;
 
 	/**
 	 * Delete a resource using HTTP <code>DELETE</code> at the specified url
