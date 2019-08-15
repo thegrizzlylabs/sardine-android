@@ -4,6 +4,7 @@ package com.thegrizzlylabs.sardineandroid.impl;
 import android.content.ContentResolver;
 import android.net.Uri;
 
+import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.SardineListener;
 
 import java.io.File;
@@ -32,11 +33,13 @@ public class RequestBodyUtil {
         return new RequestBody() {
 
             InputStream inputStream = null;
+            SardineListener mListener = null;
 
             private void init ()
             {
                 try {
                     inputStream = cr.openInputStream(uri);
+                    mListener = listener;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +61,7 @@ public class RequestBodyUtil {
                 init();
                 Source source = Okio.source(inputStream);
 
-                if (listener == null) {
+                if (mListener == null) {
                     sink.writeAll(source);
                 }
                 else {
@@ -68,9 +71,10 @@ public class RequestBodyUtil {
                         long total = 0;
                         long read;
 
-                        while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
+                        while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1 && (mListener != null && mListener.continueUpload())) {
                             total += read;
-                            listener.transferred(total);
+                            if (mListener != null)
+                                mListener.transferred(total);
                             sink.flush();
                         }
 
