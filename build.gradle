@@ -4,7 +4,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
     }
 }
@@ -19,8 +19,8 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         minSdkVersion 15
@@ -47,28 +47,30 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            if (project.hasProperty('gitVersion')) {
-                version "$gitVersion"
-            }
-            groupId 'com.thegrizzlylabs.sardine-android'
-            artifactId 'sardine-android'
+project.afterEvaluate {
+    publishing {
+        publications {
+            MyPublication(MavenPublication) {
+                if (project.hasProperty('gitVersion')) {
+                    version "$gitVersion"
+                }
+                groupId 'com.thegrizzlylabs.sardine-android'
+                artifactId 'sardine-android'
 
-            artifact bundleReleaseAar
-            artifact sourcesJar
+                artifact bundleReleaseAar
+                artifact sourcesJar
 
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
-                configurations.implementation.allDependencies.each {
-                    // Ensure dependencies such as fileTree are not included.
-                    if (it.name != 'unspecified') {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
                     }
                 }
             }
