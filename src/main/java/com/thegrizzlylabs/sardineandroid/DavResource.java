@@ -151,7 +151,7 @@ public class DavResource {
             return DEFAULT_STATUS_CODE;
         }
         try {
-            return StatusLine.parse(response.getStatus()).code;
+            return StatusLine.Companion.parse(response.getStatus()).code;
         } catch (IOException e) {
             log.warning(String.format("Failed to parse status line: %s", status));
             return -1;
