@@ -53,7 +53,7 @@ public class FunctionalSardineTest {
     @Test
     public void testRead() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
+        final String url = "https://github.com/thegrizzlylabs/sardine-android/blob/master/README.md";
         final InputStream in = sardine.get(url);
         assertNotNull(in);
         in.close();
@@ -192,9 +192,8 @@ public class FunctionalSardineTest {
     @Test
     public void testGetTimestamps() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
+        final String url = "http://test.cyberduck.ch/dav/anon/sardine";
         final List<DavResource> resources = sardine.list(url);
-        assertEquals(1, resources.size());
         DavResource resource = resources.get(0);
         assertNotNull(resource.getModified());
         assertNotNull(resource.getCreation());
@@ -203,7 +202,9 @@ public class FunctionalSardineTest {
     @Test
     public void testGetLength() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
+        final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString());
+        sardine.put(url, "Test".getBytes());
+
         final List<DavResource> resources = sardine.list(url);
         assertEquals(1, resources.size());
         Long contentLength = resources.get(0).getContentLength();
@@ -382,11 +383,11 @@ public class FunctionalSardineTest {
     @Test
     public void testPath() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        List<DavResource> resources = sardine.list("http://test.cyberduck.ch/dav/anon/sardine/test-dir");
+        List<DavResource> resources = sardine.list("http://test.cyberduck.ch/dav/anon/sardine");
         assertFalse(resources.isEmpty());
         DavResource folder = resources.get(0);
-        assertEquals("test-dir", folder.getName());
-        assertEquals("/dav/anon/sardine/test-dir/", folder.getPath());
+        assertEquals("sardine", folder.getName());
+        assertEquals("/dav/anon/sardine/", folder.getPath());
         assertEquals(new Long(-1), folder.getContentLength());
     }
 
@@ -497,9 +498,12 @@ public class FunctionalSardineTest {
     @Test
     public void testExists() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir"));
-        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt"));
-        assertFalse(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine/test-dir/sadness.txt"));
+        final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString());
+        sardine.put(url, "Test".getBytes());
+
+        assertTrue(sardine.exists("http://test.cyberduck.ch/dav/anon/sardine"));
+        assertTrue(sardine.exists(url));
+        assertFalse(sardine.exists(String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString())));
     }
 
     @Test
@@ -513,7 +517,7 @@ public class FunctionalSardineTest {
     @Test
     public void testDirectoryContentType() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir";
+        final String url = "http://test.cyberduck.ch/dav/anon/sardine";
         final List<DavResource> resources = sardine.list(url);
         assertNotNull(resources);
         assertFalse(resources.isEmpty());
@@ -524,12 +528,14 @@ public class FunctionalSardineTest {
     @Test
     public void testFileContentType() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        final String url = "http://test.cyberduck.ch/dav/anon/sardine/test-dir/joy.txt";
+        final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString());
+        sardine.put(url, "Test".getBytes());
+
         final List<DavResource> resources = sardine.list(url);
         assertFalse(resources.isEmpty());
         assertEquals(1, resources.size());
         DavResource file = resources.get(0);
-        assertEquals("text/plain", file.getContentType());
+        assertEquals("application/octet-stream", file.getContentType());
     }
 
     @Test
