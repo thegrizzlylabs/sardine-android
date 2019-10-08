@@ -1,9 +1,10 @@
 # sardine-android
 
-[![Build Status](https://circleci.com/gh/thegrizzlylabs/sardine-android.svg?&style=shield)](https://circleci.com/gh/thegrizzlylabs/sardine-android)
-[![Version number](https://img.shields.io/bintray/v/guillaume-tgl/maven/sardine-android.svg) ](https://bintray.com/guillaume-tgl/maven/sardine-android/_latestVersion)
+[![](https://jitpack.io/v/Pigcasso/sardine-android.svg)](https://jitpack.io/#Pigcasso/sardine-android)
 
 A WebDAV client for Android, using [OkHttp](https://github.com/square/okhttp) as HTTP client.
+
+Forked from [thegrizzlylabs/sardine-android](https://github.com/thegrizzlylabs/sardine-android)
 
 ## Getting started
 
