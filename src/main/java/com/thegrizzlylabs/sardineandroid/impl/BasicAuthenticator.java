@@ -1,7 +1,5 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
-import android.support.annotation.NonNull;
-
 import java.io.IOException;
 
 import okhttp3.Authenticator;
@@ -18,7 +16,7 @@ class BasicAuthenticator implements Authenticator {
     private String userName;
     private String password;
 
-    public BasicAuthenticator(@NonNull String userName, @NonNull String password) {
+    public BasicAuthenticator(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
