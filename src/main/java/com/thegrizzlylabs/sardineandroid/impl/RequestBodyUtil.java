@@ -7,6 +7,7 @@ import android.net.Uri;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.SardineListener;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -145,4 +146,60 @@ public class RequestBodyUtil {
 
         };
     }
+
+    public static RequestBody create(final byte[] mediaData, final MediaType mediaType, final SardineListener listener) {
+
+        return new RequestBody() {
+
+            InputStream inputStream = null;
+
+            private void init ()
+            {
+                inputStream = new ByteArrayInputStream(mediaData);
+            }
+
+            @Override
+            public MediaType contentType() {
+                return mediaType;
+            }
+
+            @Override
+            public long contentLength() {
+                return mediaData.length;
+            }
+
+            @Override
+            public synchronized void writeTo(BufferedSink sink) throws IOException {
+
+                init();
+                Source source = Okio.source(inputStream);
+
+                if (listener == null)
+                {
+                    sink.writeAll(source);
+                }
+                else {
+                    try {
+
+                        long total = 0;
+                        long read;
+
+                        while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
+                            total += read;
+                            listener.transferred(total);
+                        }
+
+                        sink.flush();
+
+                    } finally {
+                        Util.closeQuietly(source);
+                    }
+                }
+
+            }
+
+        };
+    }
+
+
 }

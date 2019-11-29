@@ -303,7 +303,7 @@ public class OkHttpSardine implements Sardine {
     @Override
     public void put(String url, byte[] data, String contentType, SardineListener listener) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, data);
+        RequestBody requestBody = RequestBodyUtil.create(data, mediaType, listener);
         put(url, requestBody);
     }
 
