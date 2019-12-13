@@ -45,11 +45,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.*;
 import javax.xml.namespace.QName;
 
 import okhttp3.Credentials;
@@ -70,7 +75,41 @@ public class OkHttpSardine implements Sardine {
     private OkHttpClient client;
 
     public OkHttpSardine() {
-        this.client = new OkHttpClient.Builder().build();
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        client = clientBuilder.build();
+    }
+
+    public void allowForInsecureSSL() throws NoSuchAlgorithmException, KeyManagementException {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                X509Certificate[] cArrr = new X509Certificate[0];
+                return cArrr;
+            }
+
+            @Override
+            public void checkServerTrusted(final X509Certificate[] chain,
+                                           final String authType) throws CertificateException {
+            }
+
+            @Override
+            public void checkClientTrusted(final X509Certificate[] chain,
+                                           final String authType) throws CertificateException {
+            }
+        }};
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        clientBuilder.sslSocketFactory(sslContext.getSocketFactory());
+
+        HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+        clientBuilder.hostnameVerifier(hostnameVerifier);
+        client = clientBuilder.build();
     }
 
     public OkHttpSardine(OkHttpClient client) {
@@ -93,22 +132,23 @@ public class OkHttpSardine implements Sardine {
         setCredentials(username, password, false);
     }
 
-    private class AuthenticationInterceptor implements Interceptor {
+private class AuthenticationInterceptor implements Interceptor {
 
-        private String userName;
-        private String password;
+    private String userName;
+    private String password;
 
-        public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
-            this.userName = userName;
-            this.password = password;
-        }
-
-        @Override
-        public Response intercept(@NonNull Chain chain) throws IOException {
-            Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
-            return chain.proceed(request);
-        }
+    public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
+        this.userName = userName;
+        this.password = password;
     }
+
+    @Override
+    public Response intercept(@NonNull Chain chain) throws IOException {
+        Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
+        return chain.proceed(request);
+    }
+
+}
 
     @Override
     public List<DavResource> getResources(String url) throws IOException {
@@ -586,6 +626,7 @@ public class OkHttpSardine implements Sardine {
     public void ignoreCookies() {
         throw new UnsupportedOperationException();
     }
+
     private void execute(Request request) throws IOException {
         execute(request, new VoidResponseHandler());
     }
