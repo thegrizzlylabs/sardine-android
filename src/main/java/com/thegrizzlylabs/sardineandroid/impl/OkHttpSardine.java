@@ -1,7 +1,5 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
-import android.support.annotation.NonNull;
-
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
@@ -98,13 +96,13 @@ public class OkHttpSardine implements Sardine {
         private String userName;
         private String password;
 
-        public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
+        public AuthenticationInterceptor(String userName, String password) {
             this.userName = userName;
             this.password = password;
         }
 
         @Override
-        public Response intercept(@NonNull Chain chain) throws IOException {
+        public Response intercept(Chain chain) throws IOException {
             Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
             return chain.proceed(request);
         }
@@ -317,7 +315,7 @@ public class OkHttpSardine implements Sardine {
         put(url, requestBody, new Headers.Builder().build());
     }
 
-    private void put(String url, RequestBody requestBody, @NonNull Headers headers) throws IOException {
+    private void put(String url, RequestBody requestBody, Headers headers) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .put(requestBody)
