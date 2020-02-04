@@ -1,6 +1,6 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
