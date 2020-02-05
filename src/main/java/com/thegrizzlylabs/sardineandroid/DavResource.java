@@ -7,6 +7,7 @@
 
 package com.thegrizzlylabs.sardineandroid;
 
+import com.thegrizzlylabs.sardineandroid.model.Lockdiscovery;
 import com.thegrizzlylabs.sardineandroid.model.Propstat;
 import com.thegrizzlylabs.sardineandroid.model.Resourcetype;
 import com.thegrizzlylabs.sardineandroid.model.Response;
@@ -80,6 +81,7 @@ public class DavResource {
         final Long contentLength;
         //final List<QName> supportedReports;
         final Map<QName, String> customProps;
+        final Lockdiscovery lockDiscovery;
 
         DavProperties(Date creation, Date modified, String contentType,
                       Long contentLength, String etag, String displayName, List<QName> resourceTypes,
@@ -94,6 +96,7 @@ public class DavResource {
             this.contentLanguage = contentLanguage;
             //this.supportedReports = supportedReports;
             this.customProps = customProps;
+            this.lockDiscovery = null;
         }
 
         DavProperties(Response response) {
@@ -107,6 +110,7 @@ public class DavResource {
             this.contentLanguage = getContentLanguage(response);
             //this.supportedReports = getSupportedReports(response);
             this.customProps = getCustomProps(response);
+            this.lockDiscovery = getLockDiscovery(response);
         }
     }
 
@@ -414,6 +418,19 @@ public class DavResource {
         return customPropsMap;
     }
 
+    private Lockdiscovery getLockDiscovery(Response response) {
+        List<Propstat> list = response.getPropstat();
+        if (list.isEmpty()) {
+            return null;
+        }
+        for (Propstat propstat : list) {
+            if (propstat.getProp() != null) {
+                return propstat.getProp().getLockdiscovery();
+            }
+        }
+        return null;
+    }
+
     /**
      * @return Status code (or 200 if not present, or -1 if malformed)
      */
@@ -511,6 +528,10 @@ public class DavResource {
      */
     public Map<QName, String> getCustomPropsNS() {
         return this.props.customProps;
+    }
+
+    public Lockdiscovery getLockDiscovery() {
+        return this.props.lockDiscovery;
     }
 
     /**
