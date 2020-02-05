@@ -280,6 +280,20 @@ public interface Sardine
 	 */
 	void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException;
 
+
+	/**
+	 * Uses <code>PUT</code> to upload file to a server with specific contentType.
+	 * Repeatable on authentication failure.
+	 *
+	 * @param url		Path to the resource including protocol and hostname
+	 * @param localFile local file to send
+	 * @param contentType	MIME type to add to the HTTP request header
+	 * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
+	 * @param lockToken A lock token is a type of state token that identifies a particular lock.
+	 * @throws IOException I/O error or HTTP response validation failure
+	 */
+	void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException;
+
 	/**
 	 * Delete a resource using HTTP <code>DELETE</code> at the specified url
 	 *

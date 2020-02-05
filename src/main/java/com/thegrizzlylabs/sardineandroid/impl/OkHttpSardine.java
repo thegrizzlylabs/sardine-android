@@ -1,5 +1,7 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
+import android.text.TextUtils;
+
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
@@ -302,11 +304,19 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException {
+        put(url, localFile, contentType, expectContinue, null);
+    }
+
+    @Override
+    public void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         RequestBody requestBody = RequestBody.create(mediaType, localFile);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
+        }
+        if (!TextUtils.isEmpty(lockToken)) {
+            headersBuilder.add("If", "<" + url + "> (<" + lockToken + ">)");
         }
         put(url, requestBody, headersBuilder.build());
     }
