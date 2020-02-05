@@ -349,12 +349,20 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public void move(String sourceUrl, String destinationUrl, boolean overwrite) throws IOException {
-        Request request = new Request.Builder()
+        move(sourceUrl, destinationUrl, overwrite, null);
+    }
+
+    @Override
+    public void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException {
+        Request.Builder buildsr = new Request.Builder()
                 .url(sourceUrl)
                 .method("MOVE", null)
                 .header("DESTINATION", URI.create(destinationUrl).toASCIIString())
-                .header("OVERWRITE", overwrite ? "T" : "F")
-                .build();
+                .header("OVERWRITE", overwrite ? "T" : "F");
+        if (lockToken != null) {
+            buildsr.header("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
+        }
+        Request request = buildsr.build();
         execute(request);
     }
 
