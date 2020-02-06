@@ -364,15 +364,15 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException {
-        Request.Builder buildsr = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(sourceUrl)
                 .method("MOVE", null)
                 .header("DESTINATION", URI.create(destinationUrl).toASCIIString())
                 .header("OVERWRITE", overwrite ? "T" : "F");
         if (lockToken != null) {
-            buildsr.header("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
+            builder.header("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
         }
-        Request request = buildsr.build();
+        Request request = builder.build();
         execute(request);
     }
 
