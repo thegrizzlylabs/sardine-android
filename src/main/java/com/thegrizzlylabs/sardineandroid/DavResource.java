@@ -83,7 +83,7 @@ public class DavResource {
         //final List<QName> supportedReports;
         final Map<QName, String> customProps;
         final Lockdiscovery lockDiscovery;
-        final Supportedlock supportedlock;
+        final Supportedlock supportedLock;
 
         DavProperties(Date creation, Date modified, String contentType,
                       Long contentLength, String etag, String displayName, List<QName> resourceTypes,
@@ -99,7 +99,7 @@ public class DavResource {
             //this.supportedReports = supportedReports;
             this.customProps = customProps;
             this.lockDiscovery = null;
-            this.supportedlock = null;
+            this.supportedLock = null;
         }
 
         DavProperties(Response response) {
@@ -114,7 +114,7 @@ public class DavResource {
             //this.supportedReports = getSupportedReports(response);
             this.customProps = getCustomProps(response);
             this.lockDiscovery = getLockDiscovery(response);
-            this.supportedlock = getSupportedLock(response);
+            this.supportedLock = getSupportedLock(response);
         }
     }
 
@@ -552,7 +552,7 @@ public class DavResource {
     }
 
     public Supportedlock getSupportedlock() {
-        return this.props.supportedlock;
+        return this.props.supportedLock;
     }
 
     /**
