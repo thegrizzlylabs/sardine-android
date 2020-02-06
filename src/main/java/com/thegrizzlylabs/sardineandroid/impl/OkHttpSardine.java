@@ -316,7 +316,7 @@ public class OkHttpSardine implements Sardine {
             headersBuilder.add("Expect", "100-Continue");
         }
         if (!TextUtils.isEmpty(lockToken)) {
-            headersBuilder.add("If", "<" + url + "> (<" + lockToken + ">)");
+            addLockTokenToHeaders(headersBuilder, url, lockToken);
         }
         put(url, requestBody, headersBuilder.build());
     }
@@ -366,14 +366,22 @@ public class OkHttpSardine implements Sardine {
     public void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException {
         Request.Builder builder = new Request.Builder()
                 .url(sourceUrl)
-                .method("MOVE", null)
-                .header("DESTINATION", URI.create(destinationUrl).toASCIIString())
-                .header("OVERWRITE", overwrite ? "T" : "F");
+                .method("MOVE", null);
+
+        Headers.Builder headersBuilder = new Headers.Builder();
+        headersBuilder.add("DESTINATION", URI.create(destinationUrl).toASCIIString());
+        headersBuilder.add("OVERWRITE", overwrite ? "T" : "F");
+
         if (lockToken != null) {
-            builder.header("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
+            addLockTokenToHeaders(headersBuilder, destinationUrl, lockToken);
         }
+        builder.headers(headersBuilder.build());
         Request request = builder.build();
         execute(request);
+    }
+
+    private void addLockTokenToHeaders(Headers.Builder headersBuilder, String destinationUrl, String lockToken) {
+        headersBuilder.add("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
     }
 
     @Override
