@@ -335,9 +335,10 @@ public interface Sardine
 	 * @param sourceUrl	  Path to the resource including protocol and hostname
 	 * @param destinationUrl Path to the resource including protocol and hostname
 	 * @param overwrite {@code true} to overwrite if the destination exists, {@code false} otherwise.
+	 * @param lockToken A lock token is a type of state token that identifies a particular lock.
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
-	void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockTocken) throws IOException;
+	void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException;
 
 	/**
 	 * Copy a url from source to destination using WebDAV <code>COPY</code>. Assumes overwrite.
