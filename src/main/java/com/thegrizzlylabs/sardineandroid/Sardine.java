@@ -388,6 +388,26 @@ public interface Sardine
 	String lock(String url) throws IOException;
 
 	/**
+	 * <p>
+	 * Put an exclusive write lock on this resource. A write lock must prevent a principal without
+	 * the lock from successfully executing a PUT, POST, PROPPATCH, LOCK, UNLOCK, MOVE, DELETE, or MKCOL
+	 * on the locked resource. All other current methods, GET in particular, function
+	 * independently of the lock.
+	 * </p>
+	 * A WebDAV compliant server is not required to support locking in any form. If the server does support
+	 * locking it may choose to support any combination of exclusive and shared locks for any access types.
+	 *
+	 * @param url Path to the resource including protocol and hostname
+	 * @param timeout Timeout is measured in seconds remaining until lock expiration.
+	 * @return The lock token to unlock this resource. A lock token is a type of state token, represented
+	 *         as a URI, which identifies a particular lock. A lock token is returned by every successful
+	 *         <code>LOCK</code> operation in the lockdiscovery property in the response body, and can also be found through
+	 *         lock discovery on a resource.
+	 * @throws IOException I/O error or HTTP response validation failure
+	 */
+	String lock(String url, int timeout) throws IOException;
+
+	/**
 	 * A LOCK request with no request body is a "LOCK refresh" request. It's purpose is to restart all timers
 	 * associated with a lock. The request MUST include an "If" header that contains the lock tokens of the
 	 * locks to be refreshed (note there may be multiple in the case of shared locks).

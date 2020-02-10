@@ -413,6 +413,11 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public String lock(String url) throws IOException {
+        return lock(url, 0);
+    }
+
+    @Override
+    public String lock(String url, int timeout) throws IOException {
         Lockinfo body = new Lockinfo();
         Lockscope scopeType = new Lockscope();
         scopeType.setExclusive(new Exclusive());
@@ -423,10 +428,13 @@ public class OkHttpSardine implements Sardine {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
 
-        Request request = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .method("LOCK", requestBody)
-                .build();
+                .method("LOCK", requestBody);
+        if (timeout > 0) {
+            builder.header("Timeout", "Second-" + timeout);
+        }
+        Request request = builder.build();
         return execute(request, new LockResponseHandler());
     }
 
