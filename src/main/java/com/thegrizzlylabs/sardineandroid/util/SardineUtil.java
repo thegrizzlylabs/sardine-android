@@ -17,6 +17,8 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -241,15 +243,10 @@ public final class SardineUtil {
     /**
      *  @return standard UTF8 charset on any version of Android
      */
-    public static Charset standardUTF8()
-    {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
-        {
+    public static Charset standardUTF8() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             return StandardCharsets.UTF_8;
-        }
-        else
-        {
-            //noinspection CharsetObjectCanBeUsed
+        } else {
             return Charset.forName("UTF-8");
         }
     }
