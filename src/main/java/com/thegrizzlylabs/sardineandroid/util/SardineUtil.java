@@ -237,4 +237,20 @@ public final class SardineUtil {
     public static Element createElement(Element parent, QName key) {
         return parent.getOwnerDocument().createElementNS(key.getNamespaceURI(), key.getPrefix() + ":" + key.getLocalPart());
     }
+   
+    /**
+     *  @return standard UTF8 charset on any version of Android
+     */
+    public static Charset standardUTF8()
+    {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
+        {
+            return StandardCharsets.UTF_8;
+        }
+        else
+        {
+            //noinspection CharsetObjectCanBeUsed
+            return Charset.forName("UTF-8");
+        }
+    }
 }
