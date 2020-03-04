@@ -105,7 +105,7 @@ public class OkHttpSardine implements Sardine {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
+            Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password, SardineUtil.standardUTF8())).build();
             return chain.proceed(request);
         }
     }
