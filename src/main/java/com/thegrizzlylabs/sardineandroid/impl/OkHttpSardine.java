@@ -7,6 +7,7 @@ import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
 import com.thegrizzlylabs.sardineandroid.DavQuota;
 import com.thegrizzlylabs.sardineandroid.DavResource;
+import com.thegrizzlylabs.sardineandroid.InputStreamProvider;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.handler.ExistsResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.InputStreamResponseHandler;
@@ -282,6 +283,11 @@ public class OkHttpSardine implements Sardine {
                 .build();
 
         return execute(request, new InputStreamResponseHandler());
+    }
+
+    @Override
+    public void put(String url, InputStreamProvider dataStreamProvider) throws IOException {
+        put(url, new InputStreamRequestBody(dataStreamProvider));
     }
 
     @Override
