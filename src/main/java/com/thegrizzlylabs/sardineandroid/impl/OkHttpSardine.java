@@ -45,6 +45,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -625,6 +627,43 @@ private class AuthenticationInterceptor implements Interceptor {
     @Override
     public void ignoreCookies() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void enablePreemptiveAuthentication(String hostname) {
+        enablePreemptiveAuthentication(hostname, -1, -1);
+    }
+
+    @Override
+    public void enablePreemptiveAuthentication(URL url) {
+
+    }
+
+    @Override
+    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort) {
+        enablePreemptiveAuthentication(hostname, httpPort, httpsPort, Consts.ISO_8859_1);
+    }
+
+    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort, Charset credentialsCharset)
+    {
+        AuthCache cache = this.context.getAuthCache();
+        if (cache == null)
+        {
+            // Add AuthCache to the execution context
+            cache = new BasicAuthCache();
+            this.context.setAuthCache(cache);
+
+        }
+        // Generate Basic preemptive scheme object and stick it to the local execution context
+        BasicScheme basicAuth = new BasicScheme(credentialsCharset);
+        // Configure HttpClient to authenticate preemptively by prepopulating the authentication data cache.
+        cache.put(new HttpHost(hostname, httpPort, "http"), basicAuth);
+        cache.put(new HttpHost(hostname, httpsPort, "https"), basicAuth);
+    }
+
+    @Override
+    public void disablePreemptiveAuthentication() {
+
     }
 
     private void execute(Request request) throws IOException {
