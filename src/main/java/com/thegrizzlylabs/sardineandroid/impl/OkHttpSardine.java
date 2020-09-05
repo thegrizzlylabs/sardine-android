@@ -47,8 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -57,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -83,7 +82,11 @@ public class OkHttpSardine implements Sardine {
     private OkHttpClient client;
 
     public OkHttpSardine() {
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .callTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS);
+
         client = clientBuilder.build();
     }
 
@@ -117,6 +120,10 @@ public class OkHttpSardine implements Sardine {
             }
         };
         clientBuilder.hostnameVerifier(hostnameVerifier);
+        clientBuilder
+                .callTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS);
         client = clientBuilder.build();
     }
 
@@ -157,7 +164,6 @@ public class OkHttpSardine implements Sardine {
             return chain.proceed(request);
         }
     }
-
 
 
     @Override
