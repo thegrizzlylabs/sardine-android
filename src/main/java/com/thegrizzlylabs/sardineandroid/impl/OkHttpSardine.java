@@ -40,6 +40,7 @@ import com.thegrizzlylabs.sardineandroid.model.Write;
 import com.thegrizzlylabs.sardineandroid.report.SardineReport;
 import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
 
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -57,7 +58,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.namespace.QName;
 
 import okhttp3.Credentials;
@@ -140,16 +145,20 @@ public class OkHttpSardine implements Sardine {
         private String userName;
         private String password;
 
-    public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
-        this.userName = userName;
-        this.password = password;
+        public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
+            this.userName = userName;
+            this.password = password;
+        }
+
+        @NotNull
+        @Override
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+            Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
+            return chain.proceed(request);
+        }
     }
 
-    @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
-        Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
-        return chain.proceed(request);
-    }
+
 
     @Override
     public List<DavResource> getResources(String url) throws IOException {
@@ -660,42 +669,40 @@ public class OkHttpSardine implements Sardine {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void enablePreemptiveAuthentication(String hostname) {
-        enablePreemptiveAuthentication(hostname, -1, -1);
-    }
-
-    @Override
-    public void enablePreemptiveAuthentication(URL url) {
-
-    }
-
-    @Override
-    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort) {
-        enablePreemptiveAuthentication(hostname, httpPort, httpsPort, Consts.ISO_8859_1);
-    }
-
-    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort, Charset credentialsCharset)
-    {
-        AuthCache cache = this.context.getAuthCache();
-        if (cache == null)
-        {
-            // Add AuthCache to the execution context
-            cache = new BasicAuthCache();
-            this.context.setAuthCache(cache);
-
-        }
-        // Generate Basic preemptive scheme object and stick it to the local execution context
-        BasicScheme basicAuth = new BasicScheme(credentialsCharset);
-        // Configure HttpClient to authenticate preemptively by prepopulating the authentication data cache.
-        cache.put(new HttpHost(hostname, httpPort, "http"), basicAuth);
-        cache.put(new HttpHost(hostname, httpsPort, "https"), basicAuth);
-    }
-
-    @Override
-    public void disablePreemptiveAuthentication() {
-
-    }
+//    @Override
+//    public void enablePreemptiveAuthentication(String hostname) {
+//        enablePreemptiveAuthentication(hostname, -1, -1);
+//    }
+//
+//    @Override
+//    public void enablePreemptiveAuthentication(URL url) {
+//
+//    }
+//
+//    @Override
+//    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort) {
+////        enablePreemptiveAuthentication(hostname, httpPort, httpsPort, Consts.ISO_8859_1);
+//    }
+//
+//    public void enablePreemptiveAuthentication(String hostname, int httpPort, int httpsPort, Charset credentialsCharset) {
+//        AuthCache cache = this.context.getAuthCache();
+//        if (cache == null) {
+//            // Add AuthCache to the execution context
+//            cache = new BasicAuthCache();
+//            this.context.setAuthCache(cache);
+//
+//        }
+//        // Generate Basic preemptive scheme object and stick it to the local execution context
+//        BasicScheme basicAuth = new BasicScheme(credentialsCharset);
+//        // Configure HttpClient to authenticate preemptively by prepopulating the authentication data cache.
+//        cache.put(new HttpHost(hostname, httpPort, "http"), basicAuth);
+//        cache.put(new HttpHost(hostname, httpsPort, "https"), basicAuth);
+//    }
+//
+//    @Override
+//    public void disablePreemptiveAuthentication() {
+//
+//    }
 
     private void execute(Request request) throws IOException {
         execute(request, new VoidResponseHandler());
