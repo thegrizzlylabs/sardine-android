@@ -1,9 +1,5 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
-import android.support.annotation.NonNull;
-
-import java.io.IOException;
-
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.Request;
@@ -18,13 +14,13 @@ class BasicAuthenticator implements Authenticator {
     private String userName;
     private String password;
 
-    public BasicAuthenticator(@NonNull String userName, @NonNull String password) {
+    public BasicAuthenticator(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
 
     @Override
-    public Request authenticate(Route route, Response response) throws IOException {
+    public Request authenticate(Route route, Response response) {
         if (response.request().header("Authorization") != null) {
             return null; // Give up, we've already attempted to authenticate.
         }

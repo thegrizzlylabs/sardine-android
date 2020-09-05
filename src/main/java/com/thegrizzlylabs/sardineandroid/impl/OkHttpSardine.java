@@ -1,6 +1,7 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
@@ -134,10 +135,10 @@ public class OkHttpSardine implements Sardine {
         setCredentials(username, password, false);
     }
 
-private class AuthenticationInterceptor implements Interceptor {
+    private class AuthenticationInterceptor implements Interceptor {
 
-    private String userName;
-    private String password;
+        private String userName;
+        private String password;
 
     public AuthenticationInterceptor(@NonNull String userName, @NonNull String password) {
         this.userName = userName;
@@ -149,8 +150,6 @@ private class AuthenticationInterceptor implements Interceptor {
         Request request = chain.request().newBuilder().addHeader("Authorization", Credentials.basic(userName, password)).build();
         return chain.proceed(request);
     }
-
-}
 
     @Override
     public List<DavResource> getResources(String url) throws IOException {
@@ -346,11 +345,19 @@ private class AuthenticationInterceptor implements Interceptor {
 
     @Override
     public void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException {
+        put(url, localFile, contentType, expectContinue, null);
+    }
+
+    @Override
+    public void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         RequestBody requestBody = RequestBody.create(mediaType, localFile);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
+        }
+        if (!TextUtils.isEmpty(lockToken)) {
+            addLockTokenToHeaders(headersBuilder, url, lockToken);
         }
         put(url, requestBody, headersBuilder.build());
     }
@@ -393,13 +400,29 @@ private class AuthenticationInterceptor implements Interceptor {
 
     @Override
     public void move(String sourceUrl, String destinationUrl, boolean overwrite) throws IOException {
-        Request request = new Request.Builder()
+        move(sourceUrl, destinationUrl, overwrite, null);
+    }
+
+    @Override
+    public void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException {
+        Request.Builder builder = new Request.Builder()
                 .url(sourceUrl)
-                .method("MOVE", null)
-                .header("DESTINATION", URI.create(destinationUrl).toASCIIString())
-                .header("OVERWRITE", overwrite ? "T" : "F")
-                .build();
+                .method("MOVE", null);
+
+        Headers.Builder headersBuilder = new Headers.Builder();
+        headersBuilder.add("DESTINATION", URI.create(destinationUrl).toASCIIString());
+        headersBuilder.add("OVERWRITE", overwrite ? "T" : "F");
+
+        if (lockToken != null) {
+            addLockTokenToHeaders(headersBuilder, destinationUrl, lockToken);
+        }
+        builder.headers(headersBuilder.build());
+        Request request = builder.build();
         execute(request);
+    }
+
+    private void addLockTokenToHeaders(Headers.Builder headersBuilder, String destinationUrl, String lockToken) {
+        headersBuilder.add("If", "<" + destinationUrl + "> (<" + lockToken + ">)");
     }
 
     @Override
@@ -431,6 +454,11 @@ private class AuthenticationInterceptor implements Interceptor {
 
     @Override
     public String lock(String url) throws IOException {
+        return lock(url, 0);
+    }
+
+    @Override
+    public String lock(String url, int timeout) throws IOException {
         Lockinfo body = new Lockinfo();
         Lockscope scopeType = new Lockscope();
         scopeType.setExclusive(new Exclusive());
@@ -441,10 +469,13 @@ private class AuthenticationInterceptor implements Interceptor {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
 
-        Request request = new Request.Builder()
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .method("LOCK", requestBody)
-                .build();
+                .method("LOCK", requestBody);
+        if (timeout > 0) {
+            builder.header("Timeout", "Second-" + timeout);
+        }
+        Request request = builder.build();
         return execute(request, new LockResponseHandler());
     }
 

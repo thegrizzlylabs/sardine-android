@@ -36,7 +36,7 @@ import org.simpleframework.xml.Root;
  * 
  * 
  */
-@Root
+@Root(strict = false)
 @Namespace(prefix = "D", reference = "DAV:")
 public class Activelock {
 

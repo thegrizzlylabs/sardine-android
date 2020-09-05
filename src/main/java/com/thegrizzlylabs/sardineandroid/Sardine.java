@@ -281,6 +281,20 @@ public interface Sardine
 	 */
 	void put(String url, File localFile, String contentType, boolean expectContinue) throws IOException;
 
+
+	/**
+	 * Uses <code>PUT</code> to upload file to a server with specific contentType.
+	 * Repeatable on authentication failure.
+	 *
+	 * @param url		Path to the resource including protocol and hostname
+	 * @param localFile local file to send
+	 * @param contentType	MIME type to add to the HTTP request header
+	 * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
+	 * @param lockToken A lock token is a type of state token that identifies a particular lock.
+	 * @throws IOException I/O error or HTTP response validation failure
+	 */
+	void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException;
+
 	/**
 	 * Delete a resource using HTTP <code>DELETE</code> at the specified url
 	 *
@@ -315,6 +329,17 @@ public interface Sardine
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
 	void move(String sourceUrl, String destinationUrl, boolean overwrite) throws IOException;
+
+	/**
+	 * Move a url to from source to destination using WebDAV <code>MOVE</code>.
+	 *
+	 * @param sourceUrl	  Path to the resource including protocol and hostname
+	 * @param destinationUrl Path to the resource including protocol and hostname
+	 * @param overwrite {@code true} to overwrite if the destination exists, {@code false} otherwise.
+	 * @param lockToken A lock token is a type of state token that identifies a particular lock.
+	 * @throws IOException I/O error or HTTP response validation failure
+	 */
+	void move(String sourceUrl, String destinationUrl, boolean overwrite, String lockToken) throws IOException;
 
 	/**
 	 * Copy a url from source to destination using WebDAV <code>COPY</code>. Assumes overwrite.
@@ -362,6 +387,26 @@ public interface Sardine
 	 * @throws IOException I/O error or HTTP response validation failure
 	 */
 	String lock(String url) throws IOException;
+
+	/**
+	 * <p>
+	 * Put an exclusive write lock on this resource. A write lock must prevent a principal without
+	 * the lock from successfully executing a PUT, POST, PROPPATCH, LOCK, UNLOCK, MOVE, DELETE, or MKCOL
+	 * on the locked resource. All other current methods, GET in particular, function
+	 * independently of the lock.
+	 * </p>
+	 * A WebDAV compliant server is not required to support locking in any form. If the server does support
+	 * locking it may choose to support any combination of exclusive and shared locks for any access types.
+	 *
+	 * @param url Path to the resource including protocol and hostname
+	 * @param timeout Timeout is measured in seconds remaining until lock expiration.
+	 * @return The lock token to unlock this resource. A lock token is a type of state token, represented
+	 *         as a URI, which identifies a particular lock. A lock token is returned by every successful
+	 *         <code>LOCK</code> operation in the lockdiscovery property in the response body, and can also be found through
+	 *         lock discovery on a resource.
+	 * @throws IOException I/O error or HTTP response validation failure
+	 */
+	String lock(String url, int timeout) throws IOException;
 
 	/**
 	 * A LOCK request with no request body is a "LOCK refresh" request. It's purpose is to restart all timers
