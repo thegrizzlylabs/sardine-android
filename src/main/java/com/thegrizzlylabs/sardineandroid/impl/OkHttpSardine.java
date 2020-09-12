@@ -60,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.namespace.QName;
@@ -91,40 +92,41 @@ public class OkHttpSardine implements Sardine {
     }
 
     public void allowForInsecureSSL() throws NoSuchAlgorithmException, KeyManagementException {
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                X509Certificate[] cArrr = new X509Certificate[0];
-                return cArrr;
-            }
+        final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    }
 
-            @Override
-            public void checkServerTrusted(final X509Certificate[] chain,
-                                           final String authType) throws CertificateException {
-            }
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    }
 
-            @Override
-            public void checkClientTrusted(final X509Certificate[] chain,
-                                           final String authType) throws CertificateException {
-            }
-        }};
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[]{};
+                    }
+                }
+        };
+        final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        clientBuilder.sslSocketFactory(sslContext.getSocketFactory());
+        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-        HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+        builder.hostnameVerifier(new HostnameVerifier() {
             @Override
             public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
-        };
-        clientBuilder.hostnameVerifier(hostnameVerifier);
-        clientBuilder
+        });
+
+        builder
                 .callTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS);
-        client = clientBuilder.build();
+        client = builder.build();
     }
 
     public OkHttpSardine(OkHttpClient client) {
