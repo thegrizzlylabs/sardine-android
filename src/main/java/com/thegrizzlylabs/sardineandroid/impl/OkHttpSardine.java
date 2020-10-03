@@ -1,7 +1,6 @@
 package com.thegrizzlylabs.sardineandroid.impl;
 
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
@@ -88,7 +87,8 @@ public class OkHttpSardine implements Sardine {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS);
 
-        client = clientBuilder.build();
+        client = clientBuilder
+                .build();
     }
 
     public void allowForInsecureSSL() throws NoSuchAlgorithmException, KeyManagementException {
@@ -350,7 +350,7 @@ public class OkHttpSardine implements Sardine {
     @Override
     public void put(String url, byte[] data, String contentType) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, data);
+        RequestBody requestBody = RequestBody.create(data, mediaType);
         put(url, requestBody);
     }
 
@@ -365,17 +365,53 @@ public class OkHttpSardine implements Sardine {
         put(url, localFile, contentType, expectContinue, null);
     }
 
+//    public void putBuffered(String url, File file, String contentType) throws IOException {
+//        int BUFFER_SIZE = 256000;
+//        FileInputStream fis = new FileInputStream(file);
+//        FileChannel ch = fis.getChannel();
+//        int to = 0;
+//        int from = 0;
+//
+//        MappedByteBuffer mappedBuffer = ch.map(FileChannel.MapMode.READ_ONLY, 0L, ch.size());
+//        mappedBuffer.position(from);
+//        byte[] byteArray; // = new byte[SIZE];
+//        int nGet;
+//        from = mappedBuffer.position();
+//        int remCnt = 0;
+//        while (mappedBuffer.hasRemaining()) {
+//            Headers.Builder headersBuilder = new Headers.Builder();
+//            nGet = Math.min(mappedBuffer.remaining(), BUFFER_SIZE);
+//            byteArray = new byte[nGet];
+//            mappedBuffer.get(byteArray, 0, nGet);
+//            to += nGet;
+//            System.out.println("bytes " + from + "-" + to + "/" + file.length());
+//            headersBuilder.add("Content-Range", "bytes " + from + "-" + to + "/" + file.length()); // total size is mandatory; works on tomcat local
+//            headersBuilder.add("Content-Type", "multipart/byteranges"); // or this
+//            headersBuilder.add("Transfer-Encoding", "chunked"); // doesnot work Transfer-encoding header already present
+//            remCnt = mappedBuffer.remaining() / BUFFER_SIZE;
+//
+//            MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
+//            RequestBody requestBody = RequestBody.create(mediaType, byteArray);
+//            this.put(url, requestBody, headersBuilder.build());
+//            from = to;
+//        }
+//        ch.close();
+//        fis.close();
+//
+//    }
+
     @Override
     public void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, localFile);
+        RequestBody requestBody = RequestBody.create(localFile, mediaType);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
         }
-        if (!TextUtils.isEmpty(lockToken)) {
-            addLockTokenToHeaders(headersBuilder, url, lockToken);
-        }
+        headersBuilder.add("Content-Type", contentType);
+//        if (!TextUtils.isEmpty(lockToken)) {
+//            addLockTokenToHeaders(headersBuilder, url, lockToken);
+//        }
         put(url, requestBody, headersBuilder.build());
     }
 
