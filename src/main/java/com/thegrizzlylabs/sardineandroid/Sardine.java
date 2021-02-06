@@ -199,6 +199,8 @@ public interface Sardine
 
 	// void put(String url, InputStream dataStream) throws IOException;
 
+	void put(String url, InputStreamProvider dataStreamProvider) throws IOException;
+
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content type
 	 * header. Repeatable on authentication failure.
