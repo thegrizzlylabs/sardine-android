@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayInputStream;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -40,6 +41,10 @@ public class SardineUtilTest {
     public void testParseDate() {
         assertNotNull(SardineUtil.parseDate("2007-07-16T13:35:49Z"));
         assertNotNull(SardineUtil.parseDate("Mon, 16 Jul 2007 13:35:49 GMT"));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(SardineUtil.parseDate("2007-07-16T13:35:49.324Z"));
+        assertEquals(324, calendar.get(Calendar.MILLISECOND));
     }
 
     @Test
