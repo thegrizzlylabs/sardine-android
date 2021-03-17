@@ -38,6 +38,8 @@ android {
 dependencies {
     api 'com.squareup.okhttp3:okhttp:4.9.0'
 
+    implementation 'com.burgstaller:okhttp-digest:1.18'
+
     implementation ('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'
         exclude module: 'stax-api'
