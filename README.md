@@ -28,6 +28,13 @@ Sardine sardine = new OkHttpSardine();
 sardine.setCredentials("username", "password");
 ```
 
+or use Sardine Provider for custom type of Authentication (Basic, Digest etc)
+```
+Sardine sardine =  SardineProvider.getSardineWithBasic("username", "password");
+Sardine sardine =  SardineProvider.getSardineWithPreemptive("username", "password");
+Sardine sardine =  SardineProvider.getSardineWithDigest("username", "password");
+```
+
 - Use the client to make requests to your WebDAV server:
 ```
 List<DavResource> resources = sardine.list("http://webdav.server.com");
