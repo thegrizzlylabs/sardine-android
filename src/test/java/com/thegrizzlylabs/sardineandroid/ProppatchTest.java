@@ -19,6 +19,7 @@ package com.thegrizzlylabs.sardineandroid;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.w3c.dom.Element;
@@ -44,27 +45,32 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class ProppatchTest {
-    /**
-     * Try to patch property in WebDAV namespace.
-     */
+
+    private final Sardine sardine = new OkHttpSardine();
+
+    @Before
+    public void setUp() {
+        sardine.setCredentials(FunctionalSardineTest.USERNAME, FunctionalSardineTest.PASSWORD);
+    }
+
     @Test
-    public void testAddPropertyDefaultNamespace() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        String url = "http://test.cyberduck.ch/dav/anon/sardine/" + UUID.randomUUID().toString();
-        sardine.put(url, new byte[]{});
+    public void testModifyProtectedProperty() throws Exception {
+        String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
+        sardine.put(url, "Test".getBytes());
         try {
             HashMap<QName, String> patch = new HashMap<>();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-            Calendar now = Calendar.getInstance();
-            now.set(2010, Calendar.MAY, 1);
-            patch.put(SardineUtil.createQNameWithDefaultNamespace("getlastmodified"), format.format(now.getTime()));
+            Calendar date = Calendar.getInstance();
+            date.set(2010, Calendar.MAY, 1);
+            patch.put(SardineUtil.createQNameWithDefaultNamespace("getlastmodified"), format.format(date.getTime()));
+
             List<DavResource> resources = sardine.patch(url, patch);
             assertNotNull(resources);
             assertEquals(1, resources.size());
             DavResource resource = resources.iterator().next();
 
             assertNotSame("We actually expect the update to fail as mod_webdav at least prohibits changing this property",
-                    now.getTime(), resource.getModified());
+                    date.getTime(), resource.getModified());
         } finally {
             sardine.delete(url);
         }
@@ -75,9 +81,8 @@ public class ProppatchTest {
      */
     @Test
     public void testAddPropertyCustomNamespace() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        String url = "http://test.cyberduck.ch/dav/anon/sardine/" + UUID.randomUUID().toString();
-        sardine.put(url, new byte[]{});
+        String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
+        sardine.put(url, "Test".getBytes());
         try {
             HashMap<QName, String> patch = new HashMap<>();
             patch.put(SardineUtil.createQNameWithCustomNamespace("fish"), "sardine");
@@ -108,9 +113,8 @@ public class ProppatchTest {
      */
     @Test
     public void testAddCustomComplexProperties() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        String url = "http://test.cyberduck.ch/dav/anon/sardine/" + UUID.randomUUID().toString();
-        sardine.put(url, new byte[]{});
+        String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
+        sardine.put(url, "Test".getBytes());
         try {
             QName authorsName = new QName("http://ns.example.com/standards/z39.50/:", "Authors", "Z");
             QName authorName = new QName("http://ns.example.com/standards/z39.50/:", "Author", "Z");
@@ -127,11 +131,11 @@ public class ProppatchTest {
             Element fish = SardineUtil.createElement(fishName);
             fish.setTextContent("sardine");
 
-            List<Element> addProps = new ArrayList<Element>();
+            List<Element> addProps = new ArrayList<>();
             addProps.add(authorsElement);
             addProps.add(fish);
 
-            Set<QName> qnames = new HashSet<QName>();
+            Set<QName> qnames = new HashSet<>();
             qnames.add(authorsName);
             qnames.add(fishName);
             {
@@ -159,11 +163,10 @@ public class ProppatchTest {
      */
     @Test
     public void testRemovePropertyCustomNamespace() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        String url = "http://test.cyberduck.ch/dav/anon/sardine/" + UUID.randomUUID().toString();
-        sardine.put(url, new byte[]{});
+        String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
+        sardine.put(url, "Test".getBytes());
         try {
-            HashMap<QName, String> patch = new HashMap<QName, String>();
+            HashMap<QName, String> patch = new HashMap<>();
             QName property = SardineUtil.createQNameWithCustomNamespace("fish");
             patch.put(property, "sardine");
             {
