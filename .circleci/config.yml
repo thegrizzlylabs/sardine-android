@@ -20,15 +20,6 @@ jobs:
       - run:
           name: Run Tests
           command: ./gradlew lint test
-      - run:
-          name: Publish on Maven
-          command: |
-            echo $CIRCLE_TAG
-            # Check correct tag format, strip leading "v" and publish
-            if [[ $CIRCLE_TAG =~ ^v(.*)$ ]]; then
-              VERSION=${BASH_REMATCH[1]}
-              ./gradlew bintrayUpload -PgitVersion=$VERSION
-            fi
       - store_artifacts:
           path: build/reports
           destination: reports
