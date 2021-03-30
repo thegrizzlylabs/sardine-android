@@ -17,45 +17,34 @@
 package com.thegrizzlylabs.sardineandroid;
 
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
-import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.URI;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class AuthenticationTest {
     @Test
     public void testBasicAuth() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        sardine.setCredentials("jenkins", "jenkins");
-        try {
-            URI url = URI.create("http://test.cyberduck.ch/dav/basic/");
-            final List<DavResource> resources = sardine.list(url.toString());
-            assertNotNull(resources);
-            assertFalse(resources.isEmpty());
-        } catch (SardineException e) {
-            fail(e.getMessage());
-        }
+        sardine.setCredentials(FunctionalSardineTest.USERNAME, FunctionalSardineTest.PASSWORD);
+        final List<DavResource> resources = sardine.list(FunctionalSardineTest.WEBDAV_URL);
+        assertNotNull(resources);
+        assertFalse(resources.isEmpty());
     }
 
+    @Ignore("ownCloud doesn't support preemptive auth?")
     @Test
     public void testPreemptiveBasicAuth() throws Exception {
         Sardine sardine = new OkHttpSardine();
-        sardine.setCredentials("jenkins", "jenkins", true);
-        try {
-            URI url = URI.create("http://test.cyberduck.ch/dav/basic/");
-            final List<DavResource> resources = sardine.list(url.toString());
-            assertNotNull(resources);
-            assertFalse(resources.isEmpty());
-        } catch (SardineException e) {
-            fail(e.getMessage());
-        }
+        sardine.setCredentials(FunctionalSardineTest.USERNAME, FunctionalSardineTest.PASSWORD, true);
+        final List<DavResource> resources = sardine.list(FunctionalSardineTest.WEBDAV_URL);
+        assertNotNull(resources);
+        assertFalse(resources.isEmpty());
     }
 }

@@ -25,14 +25,6 @@ android {
         minSdkVersion 15
         consumerProguardFiles 'proguard-rules.pro'
     }
-
-    testOptions {
-        unitTests.all {
-            useJUnit {
-                excludeCategories 'com.thegrizzlylabs.sardineandroid.IntegrationTest'
-            }
-        }
-    }
 }
 
 dependencies {
