@@ -19,20 +19,29 @@ package com.thegrizzlylabs.sardineandroid;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 import com.thegrizzlylabs.sardineandroid.impl.SardineException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class LockTest {
+
+    private final Sardine sardine = new OkHttpSardine();
+
+    @Before
+    public void setUp() {
+        sardine.setCredentials(FunctionalSardineTest.USERNAME, FunctionalSardineTest.PASSWORD);
+    }
+
     @Test
     public void testLockUnlock() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-        String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString());
+        String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
         sardine.put(url, new byte[0]);
         try {
             String token = sardine.lock(url);
@@ -40,9 +49,7 @@ public class LockTest {
                 sardine.delete(url);
                 fail("Expected delete to fail on locked resource");
             } catch (SardineException e) {
-                if (e.getStatusCode() != 423) {
-                    throw e;
-                }
+                assertEquals(423, e.getStatusCode());
             }
             sardine.unlock(url, token);
         } finally {
@@ -52,7 +59,6 @@ public class LockTest {
 
     @Test
     public void testLockFailureNotImplemented() throws Exception {
-        Sardine sardine = new OkHttpSardine();
         String url = "https://www.w3.org/Amaya/User/doc/WebDAV.html";
         try {
             sardine.lock(url);
@@ -66,18 +72,14 @@ public class LockTest {
 
     @Test
     public void lockRefreshUnlock() throws Exception {
-        Sardine sardine = new OkHttpSardine();
-
-        // Touch new file
-        final UUID file = UUID.randomUUID();
-        final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", file);
-        sardine.put(url, new byte[0]);
+        final String url = FunctionalSardineTest.WEBDAV_URL + "/" + UUID.randomUUID().toString();
+        sardine.put(url, "Test".getBytes());
         try {
             String lockToken = sardine.lock(url);
             String result = sardine.refreshLock(url, lockToken, url);
 
             assertTrue(lockToken.startsWith("opaquelocktoken:"));
-            assertTrue(lockToken.equals(result));
+            assertEquals(lockToken, result);
 
             sardine.unlock(url, lockToken);
         } finally {
