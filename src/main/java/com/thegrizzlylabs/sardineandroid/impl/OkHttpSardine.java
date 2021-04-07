@@ -369,7 +369,7 @@ public class OkHttpSardine implements Sardine {
                 .method("MOVE", null);
 
         Headers.Builder headersBuilder = new Headers.Builder();
-        headersBuilder.add("DESTINATION", URI.create(destinationUrl).toASCIIString());
+        headersBuilder.add("DESTINATION", destinationUrl);
         headersBuilder.add("OVERWRITE", overwrite ? "T" : "F");
 
         if (lockToken != null) {

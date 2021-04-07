@@ -210,6 +210,18 @@ public class FunctionalSardineTest {
     }
 
     @Test
+    public void testMoveToFolderIncludeBlank() throws Exception {
+        final String source = WEBDAV_URL + "/" + testFolder + "/" + UUID.randomUUID().toString();
+        final String destination = WEBDAV_URL + "/" + testFolder + "/" + UUID.randomUUID().toString() + " blank test";
+        sardine.put(source, "Test".getBytes());
+
+        sardine.move(source, destination);
+
+        assertFalse(sardine.exists(source));
+        assertTrue(sardine.exists(destination));
+    }
+
+    @Test
     public void testMoveOverwriting() throws Exception {
         final String source = WEBDAV_URL + "/" + testFolder + "/" + UUID.randomUUID().toString();
         final String destination = WEBDAV_URL + "/" + testFolder + "/" + UUID.randomUUID().toString();
