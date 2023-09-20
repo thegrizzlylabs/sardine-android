@@ -40,3 +40,6 @@ Originally forked from [Sardine](https://github.com/lookfirst/sardine)
 [Apache HTTP Client](http://hc.apache.org/) was replaced by [OkHttp](https://github.com/square/okhttp)
 
 JAXB was replaced by [SimpleXml](http://simple.sourceforge.net/)
+
+## Alternatives
+See [Awesome WebDAV: Java libraries](https://github.com/WebDAVDevs/awesome-webdav/blob/main/readme.md#java)
