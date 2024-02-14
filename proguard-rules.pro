@@ -12,3 +12,10 @@
 
 ## OkHTTP
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+-dontwarn org.simpleframework.xml.Element
+-dontwarn org.simpleframework.xml.ElementList
+-dontwarn org.simpleframework.xml.ElementListUnion
+-dontwarn org.simpleframework.xml.Namespace
+-dontwarn org.simpleframework.xml.Root
+-dontwarn org.simpleframework.xml.convert.Converter

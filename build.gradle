@@ -1,37 +1,66 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:8.2.2'
     }
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     google()
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 30
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 15
         consumerProguardFiles 'proguard-rules.pro'
     }
+    namespace "com.thegrizzlylabs.sardineandroid"
+
+    def javaVersion = JavaVersion.VERSION_17
+    compileOptions {
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
-    api 'com.squareup.okhttp3:okhttp:4.9.0'
+    api 'com.squareup.okhttp3:okhttp:4.12.0'
 
-    implementation ('org.simpleframework:simple-xml:2.7.1') {
+    implementation('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'
         exclude module: 'stax-api'
         exclude module: 'xpp3'
     }
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
+}
+//fixme uncomment this for print deprecation info
+//tasks.withType(JavaCompile) {
+//    options.compilerArgs =
+//            options.compilerArgs + ["-Xlint:deprecation", "-Xlint:unchecked"]
+//}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                afterEvaluate {
+                    from components.release
+                }
+            }
+        }
+    }
 }
