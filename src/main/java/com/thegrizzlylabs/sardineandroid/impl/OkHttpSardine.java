@@ -7,6 +7,7 @@ import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
 import com.thegrizzlylabs.sardineandroid.DavQuota;
 import com.thegrizzlylabs.sardineandroid.DavResource;
+import com.thegrizzlylabs.sardineandroid.InputStreamProvider;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.handler.ExistsResponseHandler;
 import com.thegrizzlylabs.sardineandroid.impl.handler.InputStreamResponseHandler;
@@ -170,7 +171,7 @@ public class OkHttpSardine implements Sardine {
     }
 
     protected List<DavResource> propfind(String url, int depth, Propfind body) throws IOException {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", depth < 0 ? "infinity" : Integer.toString(depth))
@@ -182,7 +183,7 @@ public class OkHttpSardine implements Sardine {
 
     @Override
     public <T> T report(String url, int depth, SardineReport<T> report) throws IOException {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), report.toXml());
+        RequestBody requestBody = RequestBody.create(report.toXml(), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", depth < 0 ? "infinity" : Integer.toString(depth))
@@ -197,7 +198,7 @@ public class OkHttpSardine implements Sardine {
     public List<DavResource> search(String url, String language, String query) throws IOException {
         SearchRequest searchBody = new SearchRequest(language, query);
         String body = SardineUtil.toXml(searchBody);
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .method("SEARCH", requestBody)
@@ -255,7 +256,7 @@ public class OkHttpSardine implements Sardine {
             remove.setProp(prop);
         }
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .method("PROPPATCH", requestBody)
@@ -285,6 +286,11 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
+    public void put(String url, InputStreamProvider dataStreamProvider) throws IOException {
+        put(url, new InputStreamRequestBody(dataStreamProvider));
+    }
+
+    @Override
     public void put(String url, byte[] data) throws IOException {
         this.put(url, data, null);
     }
@@ -292,7 +298,7 @@ public class OkHttpSardine implements Sardine {
     @Override
     public void put(String url, byte[] data, String contentType) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, data);
+        RequestBody requestBody = RequestBody.create(data, mediaType);
         put(url, requestBody);
     }
 
@@ -310,7 +316,7 @@ public class OkHttpSardine implements Sardine {
     @Override
     public void put(String url, File localFile, String contentType, boolean expectContinue, String lockToken) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
-        RequestBody requestBody = RequestBody.create(mediaType, localFile);
+        RequestBody requestBody = RequestBody.create(localFile, mediaType);
         Headers.Builder headersBuilder = new Headers.Builder();
         if (expectContinue) {
             headersBuilder.add("Expect", "100-Continue");
@@ -425,7 +431,7 @@ public class OkHttpSardine implements Sardine {
         lockType.setWrite(new Write());
         body.setLocktype(lockType);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
 
         Request.Builder builder = new Request.Builder()
                 .url(url)
@@ -467,7 +473,7 @@ public class OkHttpSardine implements Sardine {
         prop.setAcl(new Acl());
         body.setProp(prop);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", "0")
@@ -491,7 +497,7 @@ public class OkHttpSardine implements Sardine {
         prop.setQuotaUsedBytes(new QuotaUsedBytes());
         body.setProp(prop);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", "0")
@@ -520,7 +526,7 @@ public class OkHttpSardine implements Sardine {
             Ace ace = davAce.toModel();
             body.getAce().add(ace);
         }
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .method("ACL", requestBody)
@@ -538,7 +544,7 @@ public class OkHttpSardine implements Sardine {
         prop.setPrincipalURL(new PrincipalURL());*/
         body.setProp(prop);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", "1")
@@ -575,7 +581,7 @@ public class OkHttpSardine implements Sardine {
         prop.setPrincipalCollectionSet(new PrincipalCollectionSet());
         body.setProp(prop);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/xml"), SardineUtil.toXml(body));
+        RequestBody requestBody = RequestBody.create(SardineUtil.toXml(body), MediaType.parse("text/xml"));
         Request request = new Request.Builder()
                 .url(url)
                 .header("Depth", "0")

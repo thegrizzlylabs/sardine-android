@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +41,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
+
+import okhttp3.MediaType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -176,6 +179,29 @@ public class FunctionalSardineTest {
 
         assertTrue(sardine.exists(url));
         assertEquals("Test", new BufferedReader(new InputStreamReader(sardine.get(url), "UTF-8")).readLine());
+    }
+
+    @Test
+    public void testPutInputStream() throws Exception {
+        Sardine sardine = new OkHttpSardine();
+        final String url = String.format("http://test.cyberduck.ch/dav/anon/sardine/%s", UUID.randomUUID().toString());
+        sardine.put(url, new InputStreamProvider() {
+            @Override
+            public InputStream getInputStream() {
+                return new ByteArrayInputStream("Test".getBytes());
+            }
+
+            @Override
+            public MediaType getContentType() {
+                return MediaType.parse("text/plain");
+            }
+        });
+        try {
+            assertTrue(sardine.exists(url));
+            assertEquals("Test", new BufferedReader(new InputStreamReader(sardine.get(url), "UTF-8")).readLine());
+        } finally {
+            sardine.delete(url);
+        }
     }
 
     @Test
