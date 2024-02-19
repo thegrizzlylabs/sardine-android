@@ -13,6 +13,7 @@ public class ExistsResponseHandler extends ValidatingResponseHandler<Boolean>
     @Override
     public Boolean handleResponse(Response response) throws SardineException {
         if (!response.isSuccessful() && response.code() == 404) {
+            response.close();
             return false;
         }
         validateResponse(response);
