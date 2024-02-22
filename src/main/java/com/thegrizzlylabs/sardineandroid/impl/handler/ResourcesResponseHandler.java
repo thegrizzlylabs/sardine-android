@@ -32,6 +32,7 @@ public class ResourcesResponseHandler implements ResponseHandler<List<DavResourc
                 Log.w(TAG, String.format("Ignore resource with invalid URI %s", davResponse.getHref()/*.get(0)*/));
             }
         }
+        response.close();
         return resources;
     }
 }

@@ -197,7 +197,7 @@ public interface Sardine
 	// InputStream not supported
 	// See https://github.com/square/okhttp/issues/2424
 
-	// void put(String url, InputStream dataStream) throws IOException;
+	void put(String url, InputStream dataStream) throws IOException;
 
 	/**
 	 * Uses <code>PUT</code> to send data to a server with a specific content type

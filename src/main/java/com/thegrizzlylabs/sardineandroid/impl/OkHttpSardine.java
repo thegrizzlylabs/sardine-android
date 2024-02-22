@@ -2,6 +2,8 @@ package com.thegrizzlylabs.sardineandroid.impl;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.thegrizzlylabs.sardineandroid.DavAce;
 import com.thegrizzlylabs.sardineandroid.DavAcl;
 import com.thegrizzlylabs.sardineandroid.DavPrincipal;
@@ -39,6 +41,7 @@ import com.thegrizzlylabs.sardineandroid.model.Write;
 import com.thegrizzlylabs.sardineandroid.report.SardineReport;
 import com.thegrizzlylabs.sardineandroid.util.SardineUtil;
 
+import org.apache.commons.net.io.Util;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -60,6 +63,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
 /**
  * Created by guillaume on 08/11/2017.
@@ -290,6 +296,22 @@ public class OkHttpSardine implements Sardine {
     }
 
     @Override
+    public void put(String url, InputStream dataStream) throws IOException
+    {
+        RequestBody rb = create(MediaType.parse("binary/octet-stream"), dataStream);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(rb)
+                .addHeader("Transfer-Encoding", "chunked")
+                .addHeader("Expect", "100-Continue")
+                .addHeader("Content-Length", "-1")
+                .build();
+
+        Response r = client.newCall(request).execute();
+    }
+
+    @Override
     public void put(String url, byte[] data, String contentType) throws IOException {
         MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         RequestBody requestBody = RequestBody.create(mediaType, data);
@@ -377,6 +399,7 @@ public class OkHttpSardine implements Sardine {
         }
         builder.headers(headersBuilder.build());
         Request request = builder.build();
+
         execute(request);
     }
 
@@ -455,7 +478,7 @@ public class OkHttpSardine implements Sardine {
                 .header("Lock-Token", "<" + token + ">")
                 .build();
 
-        execute(request, new VoidResponseHandler());
+        execute(request);
     }
 
     @Override
@@ -526,7 +549,7 @@ public class OkHttpSardine implements Sardine {
                 .method("ACL", requestBody)
                 .build();
 
-        this.execute(request, new VoidResponseHandler());
+        this.execute(request);
     }
 
     @Override
@@ -626,4 +649,36 @@ public class OkHttpSardine implements Sardine {
         return responseHandler.handleResponse(response);
     }
 
+    private RequestBody create(final MediaType mediaType, final InputStream inputStream)
+    {
+        return new RequestBody()
+        {
+            @Override
+            public MediaType contentType()
+            {
+                return mediaType;
+            }
+
+            @Override
+            public long contentLength()
+            {
+                return -1;
+            }
+
+            @Override
+            public void writeTo(@NonNull BufferedSink sink) throws IOException
+            {
+                Source source = null;
+                try
+                {
+                    source = Okio.source(inputStream);
+                    sink.writeAll(source);
+                }
+                finally
+                {
+                    Util.closeQuietly(source);
+                }
+            }
+        };
+    }
 }

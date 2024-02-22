@@ -19,6 +19,9 @@ public class VoidResponseHandler extends ValidatingResponseHandler<Void>
     @Override
     public Void handleResponse(Response response) throws IOException {
         validateResponse(response);
+
+        response.close();
+
         return null;
     }
 }
